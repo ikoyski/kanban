@@ -89,7 +89,8 @@ This is a vanilla JavaScript project. Since it uses ES6 modules and CDN-hosted d
 
 <img width="1058" height="580" alt="dark_mode" src="https://github.com/user-attachments/assets/6fa67ca4-0bc1-49d1-a355-a59ed64977c7" />
 <img width="1056" height="580" alt="light_mode" src="https://github.com/user-attachments/assets/fd99f7d0-e99b-4d2d-b810-41d089a375a9" />
-<img width="2720" height="2016" alt="kanban_request_flow" src="https://github.com/user-attachments/assets/efdb64f8-bfd6-49d0-bb06-b7b10a006135" />
-<img width="2720" height="1440" alt="kanban_platform_infrastructure" src="https://github.com/user-attachments/assets/3ed1d653-b705-45e3-b0b4-2b7a999369fa" />
+<img width="2720" height="2016" alt="kanban_request_flow_v3" src="https://github.com/user-attachments/assets/51644b33-0d55-4d69-86c1-c49ef17b43b9" />
+<img width="2720" height="1440" alt="kanban_platform_infrastructure_v2" src="https://github.com/user-attachments/assets/0b4a14fb-3773-483f-b40e-85e773d72883" />
+
 
 
