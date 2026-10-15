@@ -690,14 +690,14 @@ class KanbanApp {
     handleLogout() {
         localStorage.removeItem('kanban-token');
         localStorage.removeItem('kanban-user');
-        window.location.replace("./");
+        window.location.replace("kanban.html");
     }
 
     initSortables() {
         if (this.currentRole === 'VIEWER') return;
 
         if (typeof Sortable === 'undefined') {
-            console.error('SortableJS is not loaded. Please check the CDN link in index.html');
+            console.error('SortableJS is not loaded. Please check the CDN link in kanban.html');
             return;
         }
 

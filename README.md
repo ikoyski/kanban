@@ -1,4 +1,4 @@
-# WebTools Kanban
+# Kanban
 
 A modern, responsive Kanban board implementation featuring drag-and-drop functionality, dark mode support, and REST API persistence.
 
@@ -26,7 +26,10 @@ A modern, responsive Kanban board implementation featuring drag-and-drop functio
 
 ```text
 .
-├── index.html          # Main entry point and layout
+├── index.html          # Landing page (links to the app)
+├── kanban.html         # The app: auth screens, board layout
+├── privacy.html        # Privacy Policy
+├── terms.html          # Terms of Use
 ├── reset-password.html # Standalone page opened from the password-reset email (?token=...)
 ├── CLAUDE.md           # AI development guidance
 ├── README.md           # Project documentation
@@ -75,7 +78,7 @@ links). `src/js/editor.js` is the only module that talks to Quill/DOMPurify dire
 
 ## Getting Started
 
-No installation or build process is required. Simply open `index.html` in any modern web browser to start using the board.
+No installation or build process is required. Open `index.html` for the landing page, or `kanban.html` to go straight to the app.
 
 ## Development
 

@@ -3,14 +3,16 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Development Commands
-- **Run App**: Open `index.html` directly in a modern web browser.
+- **Run App**: Open `kanban.html` (the app) or `index.html` (landing page) directly in a modern web browser.
 - **Build/Test**: No build process or automated test suite is currently implemented.
 
 ## Architecture and Structure
 The project is a vanilla JavaScript implementation of a Kanban board using ES6 modules.
 
 ### Core Components
-- `index.html`: The main entry point and layout.
+- `privacy.html`, `terms.html`: Static legal pages (contact email is set in each file; keep them in sync with what the app and backend actually collect).
+- `kanban.html`: The app's entry point and layout.
+- `index.html`: Static landing page (Tailwind + a small SortableJS sample board). It links to `kanban.html` and forwards old `?board=` deep links there.
 - `src/css/style.css`: Custom styles (complements Tailwind CSS).
 - `src/js/app.js`: Main application controller (`KanbanApp` class). Manages application state, event listeners, and coordinates between the API and UI.
 - `src/js/api.js`: Data persistence layer (`ApiClient` class). Handles communication with the REST API backend.
@@ -27,7 +29,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - **Role-Based Access Control (RBAC)**: The app enforces roles (`OWNER`, `EDITOR`, `VIEWER`). Mutating actions and certain UI elements are gated based on the current board role.
 
 ### Auth screen
-- `index.html` has three cards in `#app-auth-view`: login, signup, forgot password. Each form has its own Cloudflare Turnstile widget, so always read the token with `app.getTurnstileToken(form)` (scoped to that form) — never `turnstile.getResponse()` or a global `querySelector` — and call `resetTurnstile(form)` after a submit that consumed the token.
+- `kanban.html` has three cards in `#app-auth-view`: login, signup, forgot password. Each form has its own Cloudflare Turnstile widget, so always read the token with `app.getTurnstileToken(form)` (scoped to that form) — never `turnstile.getResponse()` or a global `querySelector` — and call `resetTurnstile(form)` after a submit that consumed the token.
 
 - Change Password lives in `#change-password-modal` (opened from the profile menu's `#change-password-menu`, `PATCH /v1/auth/password`). A wrong current password comes back as HTTP 400 (not 401), so it's shown inline and does not trigger the `auth-expired` logout.
 - API validation errors are shaped `{ field: "message" }` with no `message` key; `ApiClient.request` joins those values into the thrown error message.

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Kanban</title>
+    <meta name="description" content="Privacy Policy for Kanban.">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        (function () {
+            var saved = null;
+            try { saved = localStorage.getItem('kanban-theme'); } catch (e) {}
+            var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.classList.toggle('dark', dark);
+            document.documentElement.classList.toggle('light', !dark);
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {
+                fontFamily: {
+                    display: ['"Bricolage Grotesque"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    sans: ['"Public Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif']
+                },
+                colors: { primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a',950:'#172554' } }
+            } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+    <header class="max-w-6xl w-full mx-auto px-5 py-5 flex items-center justify-between">
+        <a href="./" class="flex items-center gap-3">
+            <span class="bg-primary-600 text-white p-2 rounded-lg shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6 0h3m-3 4h3" /></svg>
+            </span>
+            <span class="font-display font-extrabold text-xl tracking-tight">Kanban</span>
+        </a>
+        <a href="kanban.html" class="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold transition-colors">Open Kanban</a>
+    </header>
+    <main class="flex-1 max-w-2xl w-full mx-auto px-5 pt-8 pb-16 leading-relaxed text-slate-700 dark:text-slate-300">
+        <h1 class="font-display font-extrabold text-4xl tracking-tight text-slate-900 dark:text-slate-100">Privacy Policy</h1>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Last updated October 2026</p>
+        <p class="mt-6 mb-4">This policy explains what Kanban collects, why, and the choices you have. It is written to match how the app works today.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Who runs Kanban</h2>
+<p class="mb-4">Kanban is a personal project run by Christian San Pedro in the Philippines. In this policy, “I” and “me” mean the person running it.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">What I collect</h2>
+<ul class="list-disc pl-5 space-y-1.5 mb-4"><li><strong>Account details:</strong> your display name, email address and password when you sign up. You can add an avatar.</li><li><strong>Your content:</strong> the boards, columns, cards, labels, due dates, comments and board members you create or are added to.</li><li><strong>Technical data:</strong> your IP address and basic request details, which are processed to deliver the service, apply rate limits and block abuse.</li></ul>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">What is stored in your browser</h2>
+<p class="mb-4">Kanban saves a few items in your browser’s local storage so the app works: your login token, your display name and avatar, your theme choice, and the board you opened last. These stay on your device until you sign out or clear your browser data. I don’t use advertising or analytics cookies. Cloudflare Turnstile, the bot check on sign-up and sign-in, may set its own cookies.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">How I use it</h2>
+<ul class="list-disc pl-5 space-y-1.5 mb-4"><li>To run your account and show your boards to you and the people you share them with.</li><li>To send emails you ask for, such as password reset links.</li><li>To keep the service secure and prevent abuse.</li></ul>
+<p class="mb-4">I don’t sell your data and I don’t use it for advertising.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Who else handles your data</h2>
+<p class="mb-4">These services process some data so that Kanban works:</p>
+<ul class="list-disc pl-5 space-y-1.5 mb-4"><li><strong>Cloudflare</strong> provides the CDN, firewall, network tunnel and the Turnstile bot check. Requests to Kanban pass through it.</li><li><strong>Resend</strong> delivers emails such as password resets, so it receives your email address and the message.</li><li><strong>ui-avatars.com</strong> generates the default avatar image. Your display name is sent to it in the image address.</li><li><strong>jsDelivr, the Tailwind CSS CDN and Google Fonts</strong> serve scripts, styles and fonts to your browser, so they can see your IP address.</li></ul>
+<p class="mb-4">Your boards and account data are stored in a PostgreSQL database on infrastructure I operate.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Who can see your content</h2>
+<p class="mb-4">People you share a board with can see that board’s content, including your display name, avatar and comments. Boards you don’t share are visible only to you and to me as the operator when maintenance requires it.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">How long I keep it</h2>
+<p class="mb-4">I keep your data while your account exists. You can delete boards and cards yourself, and you can export a board as a JSON file from the app. To delete your whole account and its data, email me and I’ll remove it.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Your rights</h2>
+<p class="mb-4">Under the Philippine Data Privacy Act of 2012, and similar laws where you live, you can ask to access, correct, export or delete your personal data, and object to how it is used. Email me and I’ll respond. You can also complain to the Philippine National Privacy Commission.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Security</h2>
+<p class="mb-4">Traffic to Kanban is encrypted with HTTPS. No online service is perfectly secure, so please use a strong, unique password. If a breach affects your data, I’ll notify you as the law requires.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Children</h2>
+<p class="mb-4">Kanban isn’t intended for children. If you believe a child has created an account, email me and I’ll remove it.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Changes to this policy</h2>
+<p class="mb-4">If I change this policy in a way that matters, I’ll update the date above and, for significant changes, tell you in the app or by email.</p>
+<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Contact</h2>
+<p class="mb-4">Questions or requests: <a class="text-primary-600 hover:underline" href="mailto:YOUR-EMAIL@example.com">YOUR-EMAIL@example.com</a>.</p>
+
+    </main>
+    <footer class="border-t border-slate-200 dark:border-slate-800">
+        <div class="max-w-6xl mx-auto px-5 py-6 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
+            <span>Open source under the GPL-3.0 license.</span>
+            <nav class="flex gap-5">
+                <a href="terms.html" class="hover:text-primary-600 dark:hover:text-primary-400">Terms of Use</a>
+                <a href="https://github.com/ikoyski/kanban" class="hover:text-primary-600 dark:hover:text-primary-400">GitHub</a>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>
