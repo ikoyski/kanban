@@ -235,6 +235,11 @@ class KanbanApp {
             const password = document.getElementById('signup-password').value;
             const displayName = document.getElementById('signup-name').value;
 
+            if (!document.getElementById('signup-agree').checked) {
+                alert('Please agree to the Terms of Use and Privacy Policy to create an account.');
+                return;
+            }
+
             const turnstileToken = this.getTurnstileToken(UI.signupForm);
             if (!turnstileToken) {
                 alert('Please complete the security check.');
