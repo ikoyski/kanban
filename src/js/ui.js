@@ -193,7 +193,7 @@ export const UI = {
             'LOW': 'border-green-500 text-green-600 bg-green-50 dark:bg-green-900/20',
         };
 
-        const priorityClass = priorityColors[card.priority] || priorityColors['Medium'];
+        const priorityClass = priorityColors[card.priority] || priorityColors['MEDIUM'];
         const labelsHTML = card.labels.map(l => `<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400">${l}</span>`).join(' ');
         const isViewer = role === 'VIEWER';
 
@@ -663,9 +663,17 @@ export const UI = {
                     <div class="space-y-1">
                         <label class="text-xs font-semibold text-slate-500 tracking-wider">Priority</label>
                         <div class="detail-priority flex gap-2 cursor-pointer p-1 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                            ${['LOW', 'MEDIUM', 'HIGH'].map(p => `
-                                <span data-priority="${p}" class="px-2 py-1 text-xs font-bold rounded border cursor-pointer ${p === card.priority ? 'bg-primary-100 border-primary-500 text-primary-700 dark:bg-primary-900/30' : 'bg-slate-100 border-slate-300 text-slate-600 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-400 hover:border-primary-400'}">${p}</span>
-                            `).join('')}
+                            ${(() => {
+                                const activePriorityClasses = {
+                                    LOW: 'bg-green-100 border-green-500 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                                    MEDIUM: 'bg-yellow-100 border-yellow-500 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+                                    HIGH: 'bg-red-100 border-red-500 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+                                };
+                                const inactivePriorityClasses = 'bg-slate-100 border-slate-300 text-slate-600 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-400 hover:border-primary-400';
+                                return ['LOW', 'MEDIUM', 'HIGH'].map(p => `
+                                <span data-priority="${p}" class="px-2 py-1 text-xs font-bold rounded border cursor-pointer ${p === card.priority ? activePriorityClasses[p] : inactivePriorityClasses}">${p}</span>
+                            `).join('');
+                            })()}
                         </div>
                     </div>
                     <div class="space-y-1">

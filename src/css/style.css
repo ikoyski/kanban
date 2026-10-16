@@ -70,6 +70,20 @@
     background-color: rgba(30 58 138, 0.3);
 }
 
+/* Native <select> dropdowns in dark mode */
+.dark select {
+    color-scheme: dark;
+}
+
+.dark select option {
+    background-color: rgb(30 41 59);   /* slate-800 */
+    color: rgb(241 245 249);           /* slate-100 */
+}
+
+.dark select option:disabled {
+    color: rgb(148 163 184);           /* slate-400 */
+}
+
 /* Theme transition */
 body {
     transition: background-color 0.3s ease, color 0.3s ease;
