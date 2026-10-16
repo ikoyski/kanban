@@ -68,7 +68,7 @@ export const UI = {
     inviteRole: document.getElementById('invite-role'),
 
     // Rich-text editors (created lazily)
-    descriptionEditor: null, // card add/edit form
+    descriptionEditor: null, // add-card form
     commentEditor: null,     // comment composer in the card detail modal
 
     renderBoard(state, role = 'EDITOR') {
@@ -269,14 +269,15 @@ export const UI = {
         });
     },
 
-    openModal(title, card = null, columnId = null) {
+    // Opens the Add Card modal (existing cards are edited inline in the detail modal)
+    openModal(title, columnId = null) {
         if (!this.descriptionEditor) {
             this.descriptionEditor = createRichEditor(document.getElementById('form-description'), {
                 placeholder: 'Add a description...',
             });
         }
 
-        this.modalTitle.textContent = card ? 'Edit Card' : title;
+        this.modalTitle.textContent = title;
         this.cardModal.classList.remove('hidden');
         this.cardModal.classList.add('flex');
 
@@ -286,20 +287,10 @@ export const UI = {
             this.cardModal.querySelector('.relative').classList.add('scale-100', 'opacity-100');
         }, 10);
 
-        if (card) {
-            document.getElementById('card-id').value = card.id;
-            document.getElementById('form-title').value = card.title;
-            this.descriptionEditor.setHtml(card.description);
-            document.getElementById('form-date').value = card.dueDate;
-            document.getElementById('form-labels').value = card.labels.join(', ');
-            document.querySelector(`input[name="priority"][value="${card.priority}"]`).checked = true;
-        } else {
-            this.cardForm.reset();
-            this.descriptionEditor.clear();
-            document.getElementById('card-id').value = '';
-            document.getElementById('column-id').value = columnId || '';
-            document.querySelector('input[name="priority"][value="MEDIUM"]').checked = true;
-        }
+        this.cardForm.reset();
+        this.descriptionEditor.clear();
+        document.getElementById('column-id').value = columnId || '';
+        document.querySelector('input[name="priority"][value="MEDIUM"]').checked = true;
     },
 
     closeModal() {

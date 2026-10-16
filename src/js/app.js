@@ -551,7 +551,7 @@ class KanbanApp {
         // Modal Open Event
         window.addEventListener('open-card-modal', (e) => {
             const { columnId } = e.detail;
-            UI.openModal('Add New Card', null, columnId);
+            UI.openModal('Add New Card', columnId);
         });
 
         // Form Submit
@@ -823,14 +823,13 @@ class KanbanApp {
         }
     }
 
-    // create new card or update card
+    // Create a new card (existing cards are edited inline in the detail modal)
     async handleFormSubmit() {
         if (this.currentRole === 'VIEWER') {
-            alert('You do not have permission to edit cards.');
+            alert('You do not have permission to add cards.');
             return;
         }
 
-        const cardId = document.getElementById('card-id').value;
         const columnId = document.getElementById('column-id').value;
 
         const cardData = {
@@ -841,56 +840,40 @@ class KanbanApp {
             labels: document.getElementById('form-labels').value.split(',').map(l => l.trim()).filter(l => l !== ''),
         };
 
-        if (cardId) {
-            // update card
-            const oldCard = { ...this.state.cards[cardId] };
-            this.state.cards[cardId] = { ...oldCard, ...cardData };
-            UI.renderBoard(this.state);
-            this.initSortables();
-            UI.closeModal();
-
-            try {
-                await ApiClient.updateCard(cardId, cardData);
-            } catch (error) {
-                this.state.cards[cardId] = oldCard;
-            }
+        const tempId = 'card-' + Date.now();
+        const newCard = {
+            id: tempId,
+            ...cardData,
+            createdAt: new Date().toISOString(),
+        };
+        this.state.cards[tempId] = newCard;
+        if (columnId && this.state.columns[columnId]) {
+            this.state.columns[columnId].cardIds.push(tempId);
         } else {
-            // create new card
-            const tempId = 'card-' + Date.now();
-            const newCard = {
-                id: tempId,
-                ...cardData,
-                createdAt: new Date().toISOString(),
-            };
-            this.state.cards[tempId] = newCard;
-            if (columnId && this.state.columns[columnId]) {
-                this.state.columns[columnId].cardIds.push(tempId);
-            } else {
-                this.state.columns['todo'].cardIds.push(tempId);
-            }
+            this.state.columns['todo'].cardIds.push(tempId);
+        }
+        UI.renderBoard(this.state);
+        this.initSortables();
+        UI.closeModal();
+
+        try {
+            const createdCard = await ApiClient.createCard(columnId, cardData);
+            delete this.state.cards[tempId];
+            this.state.cards[createdCard.id] = createdCard;
+
+            Object.values(this.state.columns).forEach(col => {
+                col.cardIds = col.cardIds.map(id => id === tempId ? createdCard.id : id);
+            });
             UI.renderBoard(this.state);
             this.initSortables();
-            UI.closeModal();
-
-            try {
-                const createdCard = await ApiClient.createCard(columnId, cardData);
-                delete this.state.cards[tempId];
-                this.state.cards[createdCard.id] = createdCard;
-
-                Object.values(this.state.columns).forEach(col => {
-                    col.cardIds = col.cardIds.map(id => id === tempId ? createdCard.id : id);
-                });
-                UI.renderBoard(this.state);
-                this.initSortables();
-            } catch (error) {
-                delete this.state.cards[tempId];
-                Object.values(this.state.columns).forEach(col => {
-                    col.cardIds = col.cardIds.filter(id => id !== tempId);
-                });
-                UI.renderBoard(this.state);
-                this.initSortables();
-                alert('Failed to create card: ' + error.message);
-            }
+        } catch (error) {
+            delete this.state.cards[tempId];
+            Object.values(this.state.columns).forEach(col => {
+                col.cardIds = col.cardIds.filter(id => id !== tempId);
+            });
+            UI.renderBoard(this.state);
+            this.initSortables();
+            alert('Failed to create card: ' + error.message);
         }
     }
 
