@@ -564,21 +564,17 @@ class KanbanApp {
         document.getElementById('confirm-cancel').onclick = () => UI.closeConfirm();
         document.getElementById('confirm-delete').onclick = () => this.handleDelete();
 
-        // Card Clicks (Edit/Delete/Detail)
+        // Card Clicks (Delete/Detail). Editing happens inline in the detail modal.
         UI.boardContainer.onclick = (e) => {
-            const editBtn = e.target.closest('.edit-btn');
             const deleteBtn = e.target.closest('.delete-btn');
             const cardEl = e.target.closest('.card');
 
-            if (editBtn && cardEl) {
-                const cardId = cardEl.dataset.cardId;
-                UI.openModal('Edit Card', this.state.cards[cardId]);
-            } else if (deleteBtn && cardEl) {
+            if (deleteBtn && cardEl) {
                 const cardId = cardEl.dataset.cardId;
                 this.pendingDeleteId = cardId;
                 UI.openConfirm(cardId);
             } else if (cardEl) {
-                // Open detailed view instead of edit modal
+                // Open the detail view (all card edits happen there)
                 const cardId = cardEl.dataset.cardId;
                 this.handleOpenCardDetail(cardId);
             }
