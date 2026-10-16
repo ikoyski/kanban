@@ -188,9 +188,9 @@ export const UI = {
         if (!card) return '';
 
         const priorityColors = {
-            'HIGH': 'border-red-500 text-red-600 bg-red-50 dark:bg-red-900/20',
+            'HIGH': 'border-red-500 text-red-600 bg-red-100 dark:bg-red-900/20',
             'MEDIUM': 'border-yellow-500 text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20',
-            'LOW': 'border-green-500 text-green-600 bg-green-50 dark:bg-green-900/20',
+            'LOW': 'border-green-500 text-green-600 bg-green-100 dark:bg-green-900/20',
         };
 
         const priorityClass = priorityColors[card.priority] || priorityColors['MEDIUM'];
@@ -198,7 +198,7 @@ export const UI = {
         const isViewer = role === 'VIEWER';
 
         return `
-            <div class="card group bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border-l-4 ${priorityClass} cursor-pointer relative" data-card-id="${card.id}" data-id="${card.id}">
+            <div class="card group dark:bg-slate-800 p-3 rounded-xl shadow-sm border-l-4 ${priorityClass} cursor-pointer relative" data-card-id="${card.id}" data-id="${card.id}">
                 <div class="flex items-center justify-between mb-2">
                     <div class="flex flex-wrap gap-1">
                         ${labelsHTML}
