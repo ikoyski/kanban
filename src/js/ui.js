@@ -543,7 +543,8 @@ export const UI = {
             delete displayEl.dataset.editing;
         };
 
-        cancelBtn.onclick = restore;
+        // stopPropagation so the click doesn't reach displayEl and immediately re-open the editor
+        cancelBtn.onclick = (e) => { e.stopPropagation(); restore(); };
 
         const handleSave = async (e) => {
             if (e?.type === 'keydown' && e.key !== 'Enter') return;
@@ -558,7 +559,7 @@ export const UI = {
             }
         };
 
-        saveBtn.onclick = handleSave;
+        saveBtn.onclick = (e) => { e.stopPropagation(); handleSave(e); };
         input.onkeydown = (e) => {
             if (e.key === 'Escape') restore();
             if (e.key === 'Enter') handleSave(e);
