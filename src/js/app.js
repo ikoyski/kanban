@@ -115,14 +115,13 @@ class KanbanApp {
 
     init() {
         // Initial Render
-        UI.renderBoard(this.state, this.currentRole);
+        this.renderAndBind();
 
         // Setup user profile in header
         const user = JSON.parse(localStorage.getItem('kanban-user') || '{}');
         UI.updateUserHeader(user, this.currentRole);
 
         this.setupEventListeners();
-        this.initSortables();
         UI.renderBoardSwitcher(this.boards, this.currentBoardId);
     }
 
@@ -318,7 +317,7 @@ class KanbanApp {
                     // Optimistic update
                     this.currentBoardName = trimmedName;
                     this.state.name = trimmedName;
-                    UI.renderBoard(this.state, this.currentRole);
+                    this.renderAndBind();
 
                     try {
                         await ApiClient.renameBoard(this.currentBoardId, trimmedName);
@@ -326,7 +325,7 @@ class KanbanApp {
                         // Rollback
                         this.currentBoardName = oldName;
                         this.state.name = oldName;
-                        UI.renderBoard(this.state, this.currentRole);
+                        this.renderAndBind();
                         throw error;
                     }
                 }
@@ -447,8 +446,7 @@ class KanbanApp {
                 try {
                     const newColumn = await ApiClient.createColumn(newName.trim(), this.state.id);
                     this.state.columns[newColumn.id] = newColumn;
-                    UI.renderBoard(this.state);
-                    this.initSortables();
+                    this.renderAndBind();
                 } catch (error) {
                     alert('Failed to create column: ' + error.message);
                 }
@@ -610,15 +608,13 @@ class KanbanApp {
 
                     const oldTitle = column.title;
                     this.state.columns[columnId].title = trimmedTitle;
-                    UI.renderBoard(this.state);
-                    this.initSortables();
+                    this.renderAndBind();
 
                     try {
                         await ApiClient.renameColumn(columnId, trimmedTitle);
                     } catch (error) {
                         this.state.columns[columnId].title = oldTitle;
-                        UI.renderBoard(this.state);
-                        this.initSortables();
+                        this.renderAndBind();
                         throw error;
                     }
                 }
@@ -656,8 +652,7 @@ class KanbanApp {
             const oldColumns = { ...this.state.columns };
             delete this.state.columns[columnId];
 
-            UI.renderBoard(this.state);
-            this.initSortables();
+            this.renderAndBind();
             UI.closeDeleteColumnModal();
             this.pendingDeleteColId = null;
 
@@ -671,8 +666,7 @@ class KanbanApp {
                 await ApiClient.deleteColumn(columnId);
             } catch (error) {
                 this.state.columns = oldColumns;
-                UI.renderBoard(this.state);
-                this.initSortables();
+                this.renderAndBind();
                 alert('Failed to delete column: ' + error.message);
             }
         };
@@ -694,6 +688,14 @@ class KanbanApp {
         window.location.replace("kanban.html");
     }
 
+    // Single entry point for re-rendering the board. renderBoard() rebuilds every column/card
+    // element, which drops the SortableJS bindings, so they must be re-attached each time.
+    // Always use this instead of calling UI.renderBoard() directly.
+    renderAndBind() {
+        UI.renderBoard(this.state, this.currentRole);
+        this.initSortables();
+    }
+
     initSortables() {
         if (this.currentRole === 'VIEWER') return;
 
@@ -702,8 +704,9 @@ class KanbanApp {
             return;
         }
 
-        // Column Sortable
-        Sortable.create(UI.boardContainer, {
+        // Column Sortable (the container survives re-renders, so drop the previous instance first)
+        if (this.columnSortable) this.columnSortable.destroy();
+        this.columnSortable = Sortable.create(UI.boardContainer, {
             group: 'kanban-columns',
             handle: '.column-drag-handle',
             animation: 150,
@@ -715,6 +718,7 @@ class KanbanApp {
             const el = document.querySelector(`.card-list[data-column-id="${column.id}"]`);
             if (!el) {
                 console.warn(`Column element not found for id: ${column.id}`);
+                return;
             }
 
             Sortable.create(el, {
@@ -754,13 +758,14 @@ class KanbanApp {
         const oldCard = { ...card };
         this.state.cards[card.id] = { ...card, priority: newPriority };
 
-        UI.renderBoard(this.state);
+        this.renderAndBind();
         this.showCardDetail(card.id);
 
         try {
             await ApiClient.updateCard(card.id, { priority: newPriority });
         } catch (error) {
             this.state.cards[card.id] = oldCard;
+            this.renderAndBind();
             this.showCardDetail(card.id);
             alert('Failed to save: ' + error.message);
         }
@@ -768,8 +773,7 @@ class KanbanApp {
 
     async handleColumnSortEnd(evt) {
         if (this.currentRole === 'VIEWER') {
-            UI.renderBoard(this.state);
-            this.initSortables();
+            this.renderAndBind();
             return;
         }
         const orderedIds = [...UI.boardContainer.children]
@@ -790,8 +794,7 @@ class KanbanApp {
                 orderedIds.map((id, index) => ({ id, position: index }))
             );
         } catch (error) {
-            UI.renderBoard(this.state);
-            this.initSortables();
+            this.renderAndBind();
             alert('Failed to reorder columns: ' + error.message);
         }
     }
@@ -799,8 +802,7 @@ class KanbanApp {
     async handleSortEnd(evt) {
         if (this.currentRole === 'VIEWER') {
             // Revert the move visually if Sortable allowed it
-            UI.renderBoard(this.state);
-            this.initSortables();
+            this.renderAndBind();
             return;
         }
 
@@ -817,8 +819,7 @@ class KanbanApp {
             await ApiClient.moveCard(cardId, destColId, newIndex);
         } catch (error) {
             this.state = oldState;
-            UI.renderBoard(this.state);
-            this.initSortables();
+            this.renderAndBind();
             alert('Failed to delete card: ' + error.message);
         }
     }
@@ -852,8 +853,7 @@ class KanbanApp {
         } else {
             this.state.columns['todo'].cardIds.push(tempId);
         }
-        UI.renderBoard(this.state);
-        this.initSortables();
+        this.renderAndBind();
         UI.closeModal();
 
         try {
@@ -864,15 +864,13 @@ class KanbanApp {
             Object.values(this.state.columns).forEach(col => {
                 col.cardIds = col.cardIds.map(id => id === tempId ? createdCard.id : id);
             });
-            UI.renderBoard(this.state);
-            this.initSortables();
+            this.renderAndBind();
         } catch (error) {
             delete this.state.cards[tempId];
             Object.values(this.state.columns).forEach(col => {
                 col.cardIds = col.cardIds.filter(id => id !== tempId);
             });
-            UI.renderBoard(this.state);
-            this.initSortables();
+            this.renderAndBind();
             alert('Failed to create card: ' + error.message);
         }
     }
@@ -891,13 +889,14 @@ class KanbanApp {
             this.state.cards[card.id] = { ...card, [field]: updatedValue };
 
             // Update UI in detail modal
-            UI.renderBoard(this.state);
+            this.renderAndBind();
             this.showCardDetail(card.id);
 
             try {
                 await ApiClient.updateCard(card.id, { [field]: updatedValue });
             } catch (error) {
                 this.state.cards[card.id] = oldCard;
+                this.renderAndBind();
                 this.showCardDetail(card.id);
                 alert('Failed to save: ' + error.message);
             }
@@ -932,8 +931,7 @@ class KanbanApp {
         });
         delete this.state.cards[cardId];
 
-        UI.renderBoard(this.state);
-        this.initSortables();
+        this.renderAndBind();
         UI.closeConfirm();
         UI.closeDetailModal();
 
@@ -941,8 +939,7 @@ class KanbanApp {
             await ApiClient.deleteCard(cardId);
         } catch (error) {
             this.state = oldState;
-            UI.renderBoard(this.state);
-            this.initSortables();
+            this.renderAndBind();
             alert('Failed to delete card: ' + error.message);
         }
         this.pendingDeleteId = null;
@@ -1126,8 +1123,7 @@ class KanbanApp {
             const boardContainer = document.getElementById('boardContainer');
             if (boardContainer) boardContainer.innerHTML = '';
 
-            UI.renderBoard(this.state);
-            this.initSortables();
+            this.renderAndBind();
 
             setTimeout(() => {
                 alert('Data imported successfully!');
