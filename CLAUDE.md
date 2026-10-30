@@ -15,9 +15,9 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - `index.html`: Static landing page (Tailwind + a small SortableJS sample board). It links to `kanban.html` and forwards old `?board=` deep links there.
 - `src/css/style.css`: Custom styles (complements Tailwind CSS).
 - `src/js/app.js`: Main application controller (`KanbanApp` class). Manages application state, event listeners, and coordinates between the API and UI.
-- `src/js/api.js`: Data persistence layer (`ApiClient` class). Handles communication with the REST API backend.
+- `src/js/api.js`: Data persistence layer (`ApiClient` class). Handles communication with the REST API backend; every request carries the access token from `auth.js`.
+- `src/js/auth.js`: Sign-in with the auth server: OAuth 2.0 authorization code flow with PKCE, token storage, sign-out. No UI code in it.
 - `src/js/ui.js`: UI rendering and DOM manipulation layer (`UI` object). Handles board rendering, modal controls, and theme switching.
-- `reset-password.html`: Standalone page (own inline module script, imports `api.js`) that the backend's reset email links to as `reset-password.html?token=...`. It reads the token once, strips it from the URL, and calls `ApiClient.resetPassword`. The backend's `webtools.frontend.reset-password-url` (Config Server) must point at this file's deployed URL.
 - `src/js/editor.js`: WYSIWYG rich-text support. Wraps Quill (`createRichEditor`) and provides the sanitize/normalize/plain-text helpers (`sanitizeHtml`, `toDisplayHtml`, `toPlainText`, `normalizeEditorHtml`) used anywhere card `description` or comment `content` is read, written, or displayed.
 
 ### State Management
@@ -25,13 +25,12 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - The app supports multi-board functionality; `currentBoardId` and `currentRole` are tracked to manage access and persistence.
 - State includes `columns` (mapping column IDs to lists of card IDs), `cards` (mapping card IDs to card data), and `settings` (e.g., theme).
 - State changes are persisted via `ApiClient` to a REST API backend, using optimistic updates for a snappy UI.
-- **Authentication**: Users are authenticated via JWTs stored in `localStorage`. Session state is checked on startup and before board initialization.
+- **Authentication**: People sign in with Google on the auth server (`https://auth.ikoyski.top`); this app never handles a password. `auth.js` runs the authorization code flow with PKCE as the public client `kanban-web` and keeps the access token in `localStorage` (`kanban-auth`). The profile (name, avatar) comes from `GET /v1/users/me`, not from the token. Spring Authorization Server issues no refresh tokens to public clients, so the token is a single longer-lived access token (default 8 hours); when it expires or the API answers 401, `handleSessionExpired()` clears it and shows the sign-in screen, and signing in again is one click.
 - **Role-Based Access Control (RBAC)**: The app enforces roles (`OWNER`, `EDITOR`, `VIEWER`). Mutating actions and certain UI elements are gated based on the current board role.
 
 ### Auth screen
-- `kanban.html` has three cards in `#app-auth-view`: login, signup, forgot password. Each form has its own Cloudflare Turnstile widget, so always read the token with `app.getTurnstileToken(form)` (scoped to that form) — never `turnstile.getResponse()` or a global `querySelector` — and call `resetTurnstile(form)` after a submit that consumed the token.
+- `kanban.html` has one card in `#app-auth-view` (`#signin-card`) with a "Continue with Google" button (`#google-signin-btn`) and a message area (`#auth-message`) for sign-in errors and session expiry. The page must be served at the redirect URI registered for the client (`redirectUri()` in `auth.js` resolves `kanban.html` relative to the current page; the auth server's `AUTH_WEB_REDIRECT_URIS` must list that exact URL).
 
-- Change Password lives in `#change-password-modal` (opened from the profile menu's `#change-password-menu`, `PATCH /v1/auth/password`). A wrong current password comes back as HTTP 400 (not 401), so it's shown inline and does not trigger the `auth-expired` logout.
 - API validation errors are shaped `{ field: "message" }` with no `message` key; `ApiClient.request` joins those values into the thrown error message.
 
 ### UI Interaction Patterns
@@ -44,7 +43,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - **Tailwind CSS**: Used for responsive styling.
 - **SortableJS**: Implements the drag-and-drop functionality for moving cards between columns.
 - **Quill** + **DOMPurify**: Rich-text editing and sanitizing for card descriptions/comments (see `src/js/editor.js`).
-- **Cloudflare Turnstile**: Provides bot protection for authentication forms.
+- **Auth server**: `https://auth.ikoyski.top` (Spring Authorization Server). Endpoints used: `/oauth2/authorize`, `/oauth2/token`, `/logout`. It must allow this app's origin for CORS on the token endpoint (`AUTH_CORS_ALLOWED_ORIGINS`) and the logout return URL (`AUTH_LOGOUT_REDIRECTS`).
 
 ### Rich Text (card description / comments)
 - `description` and `content` are plain strings over the wire — the API has no opinion on

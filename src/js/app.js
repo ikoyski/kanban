@@ -1,4 +1,5 @@
 import ApiClient from './api.js';
+import * as Auth from './auth.js';
 import { UI } from './ui.js';
 import { toPlainText } from './editor.js';
 
@@ -22,21 +23,55 @@ class KanbanApp {
 
         this.setupAuthListeners();
 
+        // Coming back from the auth server (?code=...): finish the sign-in first.
+        let signInError = null;
+        try {
+            await Auth.handleRedirectCallback();
+        } catch (error) {
+            console.error('Sign-in failed:', error);
+            signInError = error.message;
+        }
+
         if (this.checkAuth()) {
             try {
+                await this.loadProfile();
                 this.boards = await ApiClient.getBoards();
                 await this.resolveActiveBoard();
             } catch (error) {
                 console.error('Failed to load boards:', error);
-                this.handleLogout();
+                if (!this.checkAuth()) {
+                    this.handleSessionExpired();
+                } else {
+                    alert('Failed to load your boards from the server. Please refresh the page.');
+                }
             }
         } else {
             this.switchView('auth');
+            const expired = sessionStorage.getItem('kanban-session-expired');
+            sessionStorage.removeItem('kanban-session-expired');
+            this.showAuthMessage(signInError || (expired ? 'Your session has expired. Please sign in again.' : null));
         }
     }
 
     checkAuth() {
-        return !!localStorage.getItem('kanban-token');
+        return Auth.isSignedIn();
+    }
+
+    // The profile (name, avatar) comes from the API, not from the token.
+    async loadProfile() {
+        const me = await ApiClient.getMe();
+        localStorage.setItem('kanban-user', JSON.stringify({
+            email: me.email,
+            displayName: me.displayName || me.email,
+            avatarUrl: me.avatarUrl,
+        }));
+    }
+
+    showAuthMessage(message) {
+        const el = document.getElementById('auth-message');
+        if (!el) return;
+        el.textContent = message || '';
+        el.classList.toggle('hidden', !message);
     }
 
     switchView(view) {
@@ -86,7 +121,7 @@ class KanbanApp {
         } catch (error) {
             console.error(`Failed to load board ${boardId}:`, error);
             if (error.message.includes('401')) {
-                this.handleLogout();
+                this.handleSessionExpired();
             } else if (error.message.includes('403')) {
                 alert('You don\'t have permission to access this board.');
                 this.resolveActiveBoard(); // Try to find another valid board
@@ -125,18 +160,6 @@ class KanbanApp {
         UI.renderBoardSwitcher(this.boards, this.currentBoardId);
     }
 
-    // The auth screen has several Turnstile widgets (login, signup, forgot password), so read the
-    // token from the widget inside the given form rather than from a global lookup.
-    getTurnstileToken(form) {
-        const input = form.querySelector('[name="cf-turnstile-response"]');
-        return input && input.value ? input.value : null;
-    }
-
-    resetTurnstile(form) {
-        const widget = form.querySelector('.cf-turnstile');
-        if (widget && typeof turnstile !== 'undefined') turnstile.reset(widget);
-    }
-
     setupAuthListeners() {
         // Popstate listener for browser back/forward
         window.addEventListener('popstate', async () => {
@@ -147,124 +170,17 @@ class KanbanApp {
             }
         });
 
-        // Toggle between Login and Signup cards
-        UI.showSignupBtn.onclick = () => {
-            UI.loginCard.classList.add('hidden');
-            UI.signupCard.classList.remove('hidden');
+        // Sign in with Google (through the auth server)
+        document.getElementById('google-signin-btn').onclick = () => {
+            this.showAuthMessage(null);
+            Auth.startLogin().catch(error => {
+                console.error('Could not start sign-in:', error);
+                this.showAuthMessage('Could not start sign-in: ' + error.message);
+            });
         };
 
-        UI.showLoginBtn.onclick = () => {
-            UI.signupCard.classList.add('hidden');
-            UI.loginCard.classList.remove('hidden');
-        };
-
-        // Forgot password: Login <-> Forgot Password cards
-        UI.showForgotBtn.onclick = (e) => {
-            e.preventDefault();
-            const loginEmail = document.getElementById('login-email').value;
-            if (loginEmail) document.getElementById('forgot-email').value = loginEmail;
-            UI.forgotSuccess.classList.add('hidden');
-            UI.loginCard.classList.add('hidden');
-            UI.forgotCard.classList.remove('hidden');
-        };
-
-        UI.backToLoginBtn.onclick = (e) => {
-            e.preventDefault();
-            UI.forgotCard.classList.add('hidden');
-            UI.loginCard.classList.remove('hidden');
-        };
-
-        // Forgot Password Submit
-        UI.forgotForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('forgot-email').value.trim();
-            const turnstileToken = this.getTurnstileToken(UI.forgotForm);
-            if (!turnstileToken) {
-                alert('Please complete the security check.');
-                return;
-            }
-
-            const submitBtn = UI.forgotForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            try {
-                await ApiClient.forgotPassword(email, turnstileToken);
-                // Same message whether or not the account exists (the API doesn't reveal it either).
-                UI.forgotSuccess.classList.remove('hidden');
-            } catch (error) {
-                alert('Could not send reset link: ' + error.message);
-            } finally {
-                submitBtn.disabled = false;
-                this.resetTurnstile(UI.forgotForm); // tokens are single-use
-            }
-        };
-
-        // Login Submit
-        UI.loginForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            const turnstileToken = this.getTurnstileToken(UI.loginForm);
-            if (!turnstileToken) {
-                alert('Please complete the security check.');
-                return;
-            }
-
-            try {
-                const authData = await ApiClient.login(email, password, turnstileToken);
-                localStorage.setItem('kanban-token', authData.token);
-                localStorage.setItem('kanban-user', JSON.stringify({
-                    email: authData.email,
-                    displayName: authData.displayName,
-                    avatarUrl: authData.avatarUrl
-                }));
-
-                const user = JSON.parse(localStorage.getItem('kanban-user') || '{}');
-                UI.updateUserHeader(user);
-                this.boards = await ApiClient.getBoards();
-                await this.resolveActiveBoard();
-            } catch (error) {
-                alert('Login failed: ' + error.message);
-            }
-        };
-
-        // Signup Submit
-        UI.signupForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const displayName = document.getElementById('signup-name').value;
-
-            if (!document.getElementById('signup-agree').checked) {
-                alert('Please agree to the Terms of Use and Privacy Policy to create an account.');
-                return;
-            }
-
-            const turnstileToken = this.getTurnstileToken(UI.signupForm);
-            if (!turnstileToken) {
-                alert('Please complete the security check.');
-                return;
-            }
-
-            try {
-                const authData = await ApiClient.signup(email, password, displayName, turnstileToken);
-                localStorage.setItem('kanban-token', authData.token);
-                localStorage.setItem('kanban-user', JSON.stringify({
-                    email: authData.email,
-                    displayName: authData.displayName,
-                    avatarUrl: authData.avatarUrl
-                }));
-
-                const user = JSON.parse(localStorage.getItem('kanban-user') || '{}');
-                UI.updateUserHeader(user);
-                this.boards = await ApiClient.getBoards();
-                await this.resolveActiveBoard();
-            } catch (error) {
-                alert('Signup failed: ' + error.message);
-            }
-        };
-
-        // Handle session expiration (401)
-        window.addEventListener('auth-expired', () => this.handleLogout());
+        // The token is missing, expired or rejected (401)
+        window.addEventListener('auth-expired', () => this.handleSessionExpired());
     }
 
     async createBoard() {
@@ -475,52 +391,6 @@ class KanbanApp {
             this.handleLogout();
         };
 
-        // Change Password
-        UI.changePasswordMenu.onclick = (e) => {
-            e.stopPropagation();
-            UI.menuDropdown.classList.add('hidden');
-            UI.openChangePasswordModal();
-        };
-        document.getElementById('close-change-password-modal').onclick = () => UI.closeChangePasswordModal();
-        document.getElementById('cancel-change-password').onclick = () => UI.closeChangePasswordModal();
-        UI.changePasswordModal.onclick = (e) => {
-            if (e.target === UI.changePasswordModal) UI.closeChangePasswordModal();
-        };
-        document.getElementById('change-show-passwords').onchange = (e) => {
-            const type = e.target.checked ? 'text' : 'password';
-            ['current-password', 'change-new-password', 'change-confirm-password'].forEach(id => {
-                document.getElementById(id).type = type;
-            });
-        };
-        UI.changePasswordForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const oldPassword = document.getElementById('current-password').value;
-            const newPassword = document.getElementById('change-new-password').value;
-            const confirmPassword = document.getElementById('change-confirm-password').value;
-            const showError = (msg) => {
-                UI.changePasswordError.textContent = msg;
-                UI.changePasswordError.classList.remove('hidden');
-            };
-            UI.changePasswordError.classList.add('hidden');
-
-            if (newPassword.length < 8) return showError('New password must be at least 8 characters long.');
-            if (newPassword !== confirmPassword) return showError('New passwords do not match.');
-            if (newPassword === oldPassword) return showError('New password must be different from your current password.');
-
-            const submitBtn = document.getElementById('change-password-submit');
-            submitBtn.disabled = true;
-            try {
-                await ApiClient.changePassword(oldPassword, newPassword);
-                UI.closeChangePasswordModal();
-                alert('Your password has been updated.');
-            } catch (error) {
-                // e.g. "Incorrect current password" (400) — shown inline, the session stays signed in.
-                showError(error.message);
-            } finally {
-                submitBtn.disabled = false;
-            }
-        };
-
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!UI.menuDropdown.contains(e.target) && e.target !== UI.menuToggle) {
@@ -682,10 +552,18 @@ class KanbanApp {
         };
     }
 
+    // The person chose to sign out: forget the tokens and end the auth server's session too.
     handleLogout() {
-        localStorage.removeItem('kanban-token');
-        localStorage.removeItem('kanban-user');
-        window.location.replace("kanban.html");
+        Auth.logout();
+    }
+
+    // The token is missing, expired or no longer accepted: forget it and show the sign-in screen.
+    handleSessionExpired() {
+        if (this.sessionExpiredHandled) return;   // several in-flight requests can fail at once
+        this.sessionExpiredHandled = true;
+        Auth.clearSession();
+        sessionStorage.setItem('kanban-session-expired', '1');
+        window.location.replace('kanban.html');
     }
 
     // Single entry point for re-rendering the board. renderBoard() rebuilds every column/card

@@ -1,16 +1,20 @@
+import { getAccessToken } from './auth.js';
+
 const BASE_URL = 'https://api.ikoyski.top/kanban-backend';
 
 class ApiClient {
   static async request(endpoint, options = {}) {
     const url = `${BASE_URL}${endpoint}`;
-    const token = localStorage.getItem('kanban-token');
+    const token = getAccessToken();
+    if (!token) {
+      // No token, or it has expired: nothing to send. The app shows the sign-in screen.
+      window.dispatchEvent(new CustomEvent('auth-expired'));
+      throw new Error('Not signed in');
+    }
     const defaultHeaders = {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
     };
-
-    if (token) {
-      defaultHeaders['Authorization'] = `Bearer ${token}`;
-    }
 
     const config = {
       ...options,
@@ -52,39 +56,8 @@ class ApiClient {
     }
   }
 
-  static async login(email, password, turnstileToken) {
-    return this.request('/v1/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, turnstileToken }),
-    });
-  }
-
-  static async signup(email, password, displayName, turnstileToken) {
-    return this.request('/v1/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, displayName, turnstileToken }),
-    });
-  }
-
-  static async forgotPassword(email, turnstileToken) {
-    return this.request('/v1/auth/forgot-password', {
-      method: 'POST',
-      body: JSON.stringify({ email, turnstileToken }),
-    });
-  }
-
-  static async resetPassword(token, newPassword) {
-    return this.request('/v1/auth/reset-password', {
-      method: 'POST',
-      body: JSON.stringify({ token, newPassword }),
-    });
-  }
-
-  static async changePassword(oldPassword, newPassword) {
-    return this.request('/v1/auth/password', {
-      method: 'PATCH',
-      body: JSON.stringify({ oldPassword, newPassword }),
-    });
+  static async getMe() {
+    return this.request('/v1/users/me');
   }
 
   static async getBoards() {
