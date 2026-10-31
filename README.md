@@ -25,21 +25,36 @@ A modern, responsive Kanban board implementation featuring drag-and-drop functio
 ```text
 .
 ├── index.html          # Landing page and AI/MCP feature overview (links to the app)
-├── kanban.html         # The app: auth screens, board layout
+├── kanban.html         # App shell; loads static UI partials before app initialization
 ├── privacy.html        # Privacy Policy, including OAuth and AI/MCP data disclosures
 ├── terms.html          # Terms of Use, including AI/MCP integration terms
 ├── CLAUDE.md           # AI development guidance
 ├── README.md           # Project documentation
 ├── LICENSE             # License information
 └── src/
+    ├── components/
+    │   ├── auth-view.html
+    │   ├── app-header.html
+    │   ├── profile-menu.html
+    │   ├── board-toolbar.html
+    │   └── modals/
+    │       ├── create-card-modal.html
+    │       ├── card-detail-modal.html
+    │       ├── delete-card-confirmation.html
+    │       ├── about-modal.html
+    │       ├── delete-column-confirmation.html
+    │       ├── members-modal.html
+    │       └── archived-cards-modal.html
     ├── css/
     │   └── style.css    # Custom styles complementing Tailwind CSS
     └── js/
-        ├── app.js       # Main application controller (KanbanApp class)
-        ├── api.js         # REST API client for data persistence (ApiClient class)
-        ├── auth.js      # Sign-in with the auth server (OAuth 2.0 code flow + PKCE) and token handling
-        ├── ui.js        # UI rendering and DOM manipulation (UI object)
-        └── editor.js    # WYSIWYG editor: Quill wrapper + HTML sanitizing/rendering helpers
+        ├── bootstrap.js      # Loads partials before app.js
+        ├── partial-loader.js # Fetches and inserts static HTML partials
+        ├── app.js            # Main application controller (KanbanApp class)
+        ├── api.js            # REST API client for data persistence (ApiClient class)
+        ├── auth.js           # OAuth 2.0 code flow with PKCE and token handling
+        ├── ui.js             # UI rendering and DOM manipulation (UI object)
+        └── editor.js         # Quill wrapper and rich-text sanitizing/rendering helpers
 ```
 
 ## Tech Stack
@@ -76,11 +91,17 @@ links). `src/js/editor.js` is the only module that talks to Quill/DOMPurify dire
 
 ## Getting Started
 
-No installation or build process is required. Open `index.html` for the landing page, or `kanban.html` to go straight to the app.
+No installation or build process is required. For local development, serve the repository over HTTP:
+
+```bash
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000/` for the landing page or `http://localhost:8000/kanban.html` for the app. The app uses `fetch()` to load its HTML partials, so `kanban.html` must not be opened directly with `file://`.
 
 ## Development
 
-This is a vanilla JavaScript project. Since it uses ES6 modules and CDN-hosted dependencies, it can be run directly from the filesystem or a simple local server.
+This is a vanilla JavaScript project with ES6 modules and CDN-hosted dependencies. Static UI fragments are stored under `src/components/` and loaded at runtime by `src/js/partial-loader.js`. The bootstrap module waits for all (including nested) partials before importing the application controller. No frontend framework or build step is required.
 
 - **Styling**: All layouts are built with Tailwind CSS.
 - **State**: The application state is maintained as a central object and synchronized with a REST API.
