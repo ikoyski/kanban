@@ -29,6 +29,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - State includes `columns` (mapping column IDs to lists of card IDs), `cards` (mapping card IDs to card data), and `settings` (e.g., theme).
 - State changes are persisted via `ApiClient` to a REST API backend, using optimistic updates for a snappy UI.
 - **Authentication**: People sign in with Google or GitHub on the auth server (`https://auth.ikoyski.top`); this app never handles a password. `auth.js` runs the authorization code flow with PKCE as the public client `kanban-web` and keeps the access token in `localStorage` (`kanban-auth`). The profile (name, avatar) comes from `GET /v1/users/me`, not from the token. Spring Authorization Server issues no refresh tokens to public clients, so the token is a single longer-lived access token (default 8 hours); when it expires or the API answers 401, `handleSessionExpired()` clears it and shows the sign-in screen, and signing in again is one click.
+- **Member avatars**: `GET /v1/boards/{boardId}/members` supplies each member's `avatarUrl`; the members modal should prefer that profile image and use the generated avatar only as a fallback.
 - **Role-Based Access Control (RBAC)**: The app enforces roles (`OWNER`, `EDITOR`, `VIEWER`). Mutating actions and certain UI elements are gated based on the current board role.
 
 ### Auth screen
