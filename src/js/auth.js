@@ -142,7 +142,7 @@ export function clearSession() {
     localStorage.removeItem('kanban-user');
 }
 
-// Sign out for real: forget the tokens here, then end the auth server's session so "Continue with Google"
+// Sign out for real: forget the tokens here, then end the auth server's session before the next provider selection
 // does not sign the same person straight back in. The auth server returns the browser to this page.
 export function logout() {
     clearSession();
