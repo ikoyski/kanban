@@ -4,7 +4,7 @@ A modern, responsive Kanban board implementation featuring drag-and-drop functio
 
 ## Features
 
-- **Authentication**: Sign in with your Google account. Sign-in happens on a separate auth server (OAuth 2.0 authorization code flow with PKCE); the app never sees a password. New people are created the first time they sign in.
+- **Authentication**: Sign in with Google or GitHub. Sign-in happens on a separate auth server (OAuth 2.0 authorization code flow with PKCE); the app never sees a provider password. New people are created the first time they sign in.
 - **User Profile**: Personalized experience with display names and avatars.
 - **Multi-Board Support**: Create, rename, and switch between multiple Kanban boards.
 - **Collaborative Access**: Invite members to boards with role-based permissions (Owner, Editor, Viewer).
