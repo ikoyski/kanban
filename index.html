@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Open-Source Kanban Board with Sharing &amp; Rich-Text Cards</title>
-    <meta name="description" content="Free, open-source kanban board. Organize tasks, share boards, write rich-text cards, and manage your workflow with supported AI assistants through MCP.">
+    <title>Free Online Kanban Board | Open-Source Task Management</title>
+    <meta name="description" content="Plan and track work with a free, open-source online Kanban board. Share boards, organize rich-text cards, set priorities and due dates, and connect AI assistants through MCP.">
     <link rel="canonical" href="https://pages.ikoyski.top/kanban/">
     <meta name="theme-color" content="#2563eb">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="application-name" content="Kanban">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Kanban">
-    <meta property="og:title" content="Free Open-Source Kanban Board with Sharing &amp; Rich-Text Cards">
-    <meta property="og:description" content="Plan work in columns, share boards, write rich-text cards, and manage tasks with supported AI assistants.">
+    <meta property="og:title" content="Free Online Kanban Board | Open-Source Task Management">
+    <meta property="og:description" content="Plan and track work with a free, open-source Kanban board. Share boards, manage rich-text cards and connect AI assistants through MCP.">
     <meta property="og:url" content="https://pages.ikoyski.top/kanban/">
     <meta property="og:image" content="https://pages.ikoyski.top/kanban/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Kanban board with To do, In progress and Done columns">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Free Open-Source Kanban Board with Sharing &amp; Rich-Text Cards">
-    <meta name="twitter:description" content="Drag cards between columns, share boards, keep rich-text notes, and manage tasks with supported AI assistants.">
+    <meta name="twitter:title" content="Free Online Kanban Board | Open-Source Task Management">
+    <meta name="twitter:description" content="Plan and track work with a free, open-source Kanban board. Share boards, organize rich-text cards and connect AI assistants through MCP.">
     <meta name="twitter:image" content="https://pages.ikoyski.top/kanban/og-image.png">
     <script type="application/ld+json">
 {
@@ -26,7 +28,15 @@
     "@type": "SoftwareApplication",
     "name": "Kanban",
     "url": "https://pages.ikoyski.top/kanban/",
-    "description": "A free, open-source kanban board for tracking tasks. Drag cards between columns, share boards with Owner, Editor and Viewer roles, and keep rich-text notes on every card.",
+    "description": "A free, open-source online Kanban board for planning and tracking work. Share boards, manage rich-text task cards, set priorities and due dates, and connect compatible AI assistants through MCP.",
+    "featureList": [
+        "Drag-and-drop Kanban boards",
+        "Board sharing with Owner, Editor and Viewer roles",
+        "Rich-text card descriptions and comments",
+        "Task priorities, due dates and labels",
+        "Light and dark themes",
+        "Compatible AI assistant integrations through the Model Context Protocol"
+    ],
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web",
     "offers": {
@@ -42,6 +52,7 @@
     </script>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -59,7 +70,6 @@
         }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -84,10 +94,15 @@
         .demo-card:active { cursor: grabbing; }
         .sortable-ghost { opacity: .35; }
         .sortable-chosen { box-shadow: 0 10px 24px rgba(15, 23, 42, .18); }
-        @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+        html { scroll-behavior: smooth; }
+        :focus-visible { outline: 3px solid #60a5fa; outline-offset: 3px; }
+        .skip-link { position: absolute; left: 1rem; top: -5rem; z-index: 100; padding: .75rem 1rem; border-radius: .75rem; background: #1d4ed8; color: white; font-weight: 600; }
+        .skip-link:focus { top: 1rem; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
 
     <header class="max-w-6xl w-full mx-auto px-5 py-5 flex items-center justify-between">
         <a href="./" class="flex items-center gap-3">
@@ -98,7 +113,7 @@
             </span>
             <span class="font-display font-extrabold text-xl tracking-tight">Kanban</span>
         </a>
-        <nav class="flex items-center gap-3 text-sm font-medium">
+        <nav aria-label="Primary navigation" class="flex items-center gap-3 text-sm font-medium">
             <button type="button" id="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle light/dark theme" class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                 <svg class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                 <svg class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
@@ -107,20 +122,24 @@
         </nav>
     </header>
 
-    <main class="flex-1">
+    <main id="main-content" class="flex-1">
         <!-- Hero -->
-        <section class="max-w-6xl mx-auto px-5 pt-10 pb-20 lg:pt-16 grid lg:grid-cols-[1fr_1.15fr] gap-12 lg:gap-16 items-center">
+        <section class="max-w-6xl mx-auto px-5 pt-10 pb-20 lg:pt-16 grid lg:grid-cols-[.9fr_1.1fr] gap-12 lg:gap-16 items-center">
             <div>
-                <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight">Plan work in columns. Move it as it changes.</h1>
-                <p class="mt-6 text-lg text-slate-600 dark:text-slate-300 max-w-md leading-relaxed">Kanban is a board for tracking tasks. Drag cards between columns, share a board with your team, and keep notes on every card.</p>
-                <div class="mt-8 flex flex-wrap items-center gap-4">
-                    <a href="kanban.html" data-app-link class="px-6 py-3 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-semibold shadow-lg transition-colors">Create your first board</a>
+                <span class="inline-flex items-center gap-2 rounded-full border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-950/50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-300">Free &amp; open source</span>
+                <h1 class="mt-5 font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight">Make work visible. Move it forward.</h1>
+                <p class="mt-6 text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">A free, open-source online Kanban board for planning work, tracking tasks and keeping your team aligned. Organize cards, share boards and see what needs attention next.</p>
+                <div class="mt-8 flex flex-wrap items-center gap-3">
+                    <a href="kanban.html" data-app-link class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-semibold shadow-lg transition-colors">Create your first board</a>
+                    <a href="https://github.com/ikoyski/kanban" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-5 py-3 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold transition-colors">Explore on GitHub <span aria-hidden="true" class="ml-2">↗</span></a>
                 </div>
+                <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">Simple task boards, useful collaboration tools and optional AI assistant integrations.</p>
             </div>
 
             <!-- Live demo: the cards really move -->
             <div>
-                <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl p-4" role="group" aria-label="Example board. Drag the cards between columns.">
+                <p class="mb-3 text-xs font-bold uppercase tracking-[.16em] text-slate-500 dark:text-slate-400">Try a sample board</p>
+                <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl p-4 sm:p-5" role="group" aria-label="Interactive sample Kanban board. Drag cards between columns to try the demo.">
                     <div class="flex gap-3 overflow-x-auto pb-1">
                         <div class="w-44 shrink-0 flex-1 min-w-[10.5rem] rounded-xl bg-slate-100 dark:bg-slate-900/60 p-3">
                             <h2 class="text-sm font-semibold mb-3 flex justify-between">To do <span class="text-slate-400 font-medium" data-count>3</span></h2>
@@ -150,23 +169,51 @@
         </section>
 
         <!-- What you can do -->
-        <section class="border-t border-slate-200 dark:border-slate-800">
-            <div class="max-w-6xl mx-auto px-5 py-16 grid md:grid-cols-3 gap-10">
-                <div>
-                    <h2 class="font-display font-extrabold text-2xl tracking-tight">Share a board, set who can edit</h2>
-                    <p class="mt-3 text-slate-600 dark:text-slate-300 leading-relaxed">Invite people by email as Owners, Editors or Viewers. Viewers can read everything but can't change it.</p>
+        <section aria-labelledby="features-title" class="border-t border-slate-200 dark:border-slate-800">
+            <div class="max-w-6xl mx-auto px-5 py-16">
+                <div class="max-w-2xl mb-10">
+                    <p class="text-xs font-bold uppercase tracking-[.16em] text-primary-600 dark:text-primary-400">Made for everyday work</p>
+                    <h2 id="features-title" class="mt-3 font-display font-extrabold text-3xl sm:text-4xl tracking-tight">Everything you need to keep work moving</h2>
+                    <p class="mt-4 text-slate-600 dark:text-slate-300 leading-relaxed">Keep the workflow simple while giving every task the details and context it needs.</p>
                 </div>
-                <div>
-                    <h2 class="font-display font-extrabold text-2xl tracking-tight">Write notes that look right</h2>
-                    <p class="mt-3 text-slate-600 dark:text-slate-300 leading-relaxed">Card descriptions and comments support bold text, lists, links and code blocks. Add priorities, due dates and labels to sort the rest.</p>
+                <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <article class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+                        <div class="h-10 w-10 rounded-xl bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 flex items-center justify-center text-xl" aria-hidden="true">↗</div>
+                        <h3 class="mt-5 font-display font-bold text-xl tracking-tight">Share with confidence</h3>
+                        <p class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Invite people by email as Owners, Editors or Viewers. Choose who can manage the board and who can simply follow along.</p>
+                    </article>
+                    <article class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+                        <div class="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 flex items-center justify-center text-xl" aria-hidden="true">✎</div>
+                        <h3 class="mt-5 font-display font-bold text-xl tracking-tight">Keep useful context</h3>
+                        <p class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Add rich-text descriptions and comments with formatting, lists, links and code blocks, alongside priorities, due dates and labels.</p>
+                    </article>
+                    <article class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+                        <div class="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xl" aria-hidden="true">▦</div>
+                        <h3 class="mt-5 font-display font-bold text-xl tracking-tight">Separate work by board</h3>
+                        <p class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Keep projects, personal plans and team workflows organized on separate boards. Work from desktop, tablet or phone.</p>
+                    </article>
+                    <article class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+                        <div class="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 flex items-center justify-center text-xl" aria-hidden="true">✦</div>
+                        <h3 class="mt-5 font-display font-bold text-xl tracking-tight">Connect your AI workflow</h3>
+                        <p class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Use compatible assistants through MCP to find boards, create or update cards, move tasks and add comments within your account permissions.</p>
+                    </article>
                 </div>
-                <div>
-                    <h2 class="font-display font-extrabold text-2xl tracking-tight">Run several boards</h2>
-                    <p class="mt-3 text-slate-600 dark:text-slate-300 leading-relaxed">Keep work, side projects and home tasks on separate boards. It works on phones and tablets, in light or dark mode.</p>
+            </div>
+        </section>
+
+        <!-- AI integration spotlight -->
+        <section aria-labelledby="ai-title" class="border-t border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-950/40">
+            <div class="max-w-6xl mx-auto px-5 py-16 grid lg:grid-cols-[1fr_auto] gap-10 items-center">
+                <div class="max-w-2xl">
+                    <p class="text-xs font-bold uppercase tracking-[.16em] text-primary-600 dark:text-primary-400">Model Context Protocol</p>
+                    <h2 id="ai-title" class="mt-3 font-display font-extrabold text-3xl sm:text-4xl tracking-tight">Bring your Kanban boards into your AI workflow</h2>
+                    <p class="mt-4 text-slate-600 dark:text-slate-300 leading-relaxed">Connect a compatible AI assistant and ask it to retrieve boards, create or update cards, move tasks and add comments. The integration uses your authorized Kanban access, so actions remain subject to your account permissions.</p>
+                    <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">AI providers process the prompts and information you choose to share with them under their own terms and privacy policies. Review the <a href="privacy.html" class="text-primary-700 dark:text-primary-300 underline underline-offset-2">Privacy Policy</a> before connecting an assistant.</p>
                 </div>
-                <div>
-                    <h2 class="font-display font-extrabold text-2xl tracking-tight">Work with AI assistants</h2>
-                    <p class="mt-3 text-slate-600 dark:text-slate-300 leading-relaxed">Connect supported assistants such as Google Gemini, Anthropic Claude and OpenAI ChatGPT through the Model Context Protocol (MCP), where available. Ask your assistant to find boards, create or update cards, move tasks and add comments. Actions use your authorized Kanban access.</p>
+                <div class="flex flex-wrap lg:flex-col gap-3 lg:min-w-48" aria-label="Examples of compatible AI assistant providers">
+                    <span class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 font-semibold">Google Gemini</span>
+                    <span class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 font-semibold">Anthropic Claude</span>
+                    <span class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 font-semibold">OpenAI ChatGPT</span>
                 </div>
             </div>
         </section>
@@ -197,10 +244,23 @@
                         <dd class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Yes. Supported assistants such as Google Gemini, Anthropic Claude and OpenAI ChatGPT can connect through MCP where available. After you authorize an assistant, it can use supported board and card actions within your account permissions. The AI provider processes your prompts and the information you choose to share with it under its own policies.</dd>
                     </div>
                     <div>
+                        <dt class="font-semibold text-lg">What information is shared with an AI assistant?</dt>
+                        <dd class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Only connect an assistant when you are comfortable sharing the information needed for your request. Prompts and relevant Kanban content may be processed by the AI provider under its own terms and privacy policy. You can review the <a href="privacy.html" class="text-primary-600 dark:text-primary-400 underline">Privacy Policy</a> for more detail.</dd>
+                    </div>
+                    <div>
                         <dt class="font-semibold text-lg">Does it work on my phone?</dt>
                         <dd class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Yes. The board works in the browser on phones, tablets and desktops, in light or dark mode.</dd>
                     </div>
                 </dl>
+            </div>
+        </section>
+
+        <!-- Final call to action -->
+        <section class="border-t border-slate-200 dark:border-slate-800">
+            <div class="max-w-6xl mx-auto px-5 py-16 text-center">
+                <h2 class="font-display font-extrabold text-3xl sm:text-4xl tracking-tight">Ready to make progress visible?</h2>
+                <p class="mt-4 mx-auto max-w-2xl text-slate-600 dark:text-slate-300 leading-relaxed">Start a board, bring your tasks together and give your next project a clear direction.</p>
+                <a href="kanban.html" data-app-link class="mt-7 inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-semibold shadow-lg transition-colors">Create your first board</a>
             </div>
         </section>
     </main>
@@ -208,7 +268,7 @@
     <footer class="border-t border-slate-200 dark:border-slate-800">
         <div class="max-w-6xl mx-auto px-5 py-6 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
             <span>Open source under the GPL-3.0 license. <a href="https://github.com/ikoyski/kanban" class="underline hover:text-primary-600 dark:hover:text-primary-400" rel="noopener">View on GitHub</a></span>
-            <nav class="flex flex-wrap gap-5">
+            <nav aria-label="Footer navigation" class="flex flex-wrap gap-5">
                 <a href="./" class="hover:text-primary-600 dark:hover:text-primary-400">Home</a>
                 <a href="terms.html" class="hover:text-primary-600 dark:hover:text-primary-400">Terms</a>
                 <a href="privacy.html" class="hover:text-primary-600 dark:hover:text-primary-400">Privacy</a>
@@ -216,6 +276,7 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
         // Signed-in visitors get a direct link to their boards.
         try {
