@@ -145,6 +145,13 @@ class KanbanApp {
     showEmptyState() {
         this.switchView('board');
         UI.renderEmptyState();
+
+        // init() fills in the header, but it only runs once a board is loaded, so do it here too:
+        // a new account starts with no boards and must still see its own name and avatar.
+        const user = JSON.parse(localStorage.getItem('kanban-user') || '{}');
+        UI.updateUserHeader(user, null);
+        UI.renderBoardSwitcher(this.boards, null);
+
         this.setupEventListeners();
     }
 

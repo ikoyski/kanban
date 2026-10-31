@@ -65,6 +65,7 @@ export const UI = {
         }
 
         this.boardName.innerHTML = state.name + roleDisplay;
+        this.setBoardControlsVisible(true);
         this.renameBoardBtn.style.visibility = (role === 'VIEWER') ? "hidden" : '';
 
         this.boardContainer.innerHTML = '';
@@ -76,7 +77,23 @@ export const UI = {
             });
     },
 
+    // Rename, members, export/import, add column, archived cards and search all act on the current board.
+    // Hide them while there is none, so they cannot send a request without a board id.
+    setBoardControlsVisible(visible) {
+        this.renameBoardBtn.style.visibility = visible ? '' : 'hidden';
+        ['members-menu', 'export-menu', 'import-menu', 'add-column-menu', 'archived-cards-menu'].forEach(id => {
+            document.getElementById(id)?.classList.toggle('hidden', !visible);
+        });
+        const search = document.getElementById('search-input');
+        if (search) {
+            search.disabled = !visible;
+            if (!visible) search.value = '';
+        }
+    },
+
     renderEmptyState() {
+        this.boardName.textContent = '';
+        this.setBoardControlsVisible(false);
         this.boardContainer.innerHTML = `
             <div class="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-6">
                 <div class="bg-slate-200 dark:bg-slate-800 p-6 rounded-full">
