@@ -28,11 +28,11 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - The app supports multi-board functionality; `currentBoardId` and `currentRole` are tracked to manage access and persistence.
 - State includes `columns` (mapping column IDs to lists of card IDs), `cards` (mapping card IDs to card data), and `settings` (e.g., theme).
 - State changes are persisted via `ApiClient` to a REST API backend, using optimistic updates for a snappy UI.
-- **Authentication**: People sign in with Google on the auth server (`https://auth.ikoyski.top`); this app never handles a password. `auth.js` runs the authorization code flow with PKCE as the public client `kanban-web` and keeps the access token in `localStorage` (`kanban-auth`). The profile (name, avatar) comes from `GET /v1/users/me`, not from the token. Spring Authorization Server issues no refresh tokens to public clients, so the token is a single longer-lived access token (default 8 hours); when it expires or the API answers 401, `handleSessionExpired()` clears it and shows the sign-in screen, and signing in again is one click.
+- **Authentication**: People sign in with Google or GitHub on the auth server (`https://auth.ikoyski.top`); this app never handles a password. `auth.js` runs the authorization code flow with PKCE as the public client `kanban-web` and keeps the access token in `localStorage` (`kanban-auth`). The profile (name, avatar) comes from `GET /v1/users/me`, not from the token. Spring Authorization Server issues no refresh tokens to public clients, so the token is a single longer-lived access token (default 8 hours); when it expires or the API answers 401, `handleSessionExpired()` clears it and shows the sign-in screen, and signing in again is one click.
 - **Role-Based Access Control (RBAC)**: The app enforces roles (`OWNER`, `EDITOR`, `VIEWER`). Mutating actions and certain UI elements are gated based on the current board role.
 
 ### Auth screen
-- `src/components/auth-view.html` supplies `#app-auth-view`, including `#signin-card`, the "Continue with Google" button (`#google-signin-btn`) and the `#auth-message` area for sign-in errors and session expiry. The component is loaded before `app.js`. The page must be served at the redirect URI registered for the client (`redirectUri()` in `auth.js` resolves `kanban.html` relative to the current page; the auth server's `AUTH_WEB_REDIRECT_URIS` must list that exact URL).
+- `src/components/auth-view.html` supplies `#app-auth-view`, including `#signin-card`, the provider-neutral "Continue to sign in" button (`#signin-btn`) and the `#auth-message` area for sign-in errors and session expiry. The component is loaded before `app.js`. The page must be served at the redirect URI registered for the client (`redirectUri()` in `auth.js` resolves `kanban.html` relative to the current page; the auth server's `AUTH_WEB_REDIRECT_URIS` must list that exact URL).
 
 ### HTML partial loading rules
 - Keep the existing DOM IDs and expected element nesting stable unless updating all consumers intentionally. `ui.js` binds to these IDs during module evaluation.
@@ -89,7 +89,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 
 ### Legal pages and privacy-sensitive changes
 - `index.html` is the public landing page; `terms.html` and `privacy.html` are user-facing legal disclosures. Update them when authentication, browser storage, third-party providers, AI/MCP capabilities, data retention or account deletion behavior changes.
-- Authentication is Google federated sign-in through `https://auth.ikoyski.top`; the frontend does not collect Google passwords.
+- Authentication uses configured federated providers through `https://auth.ikoyski.top` (currently Google and GitHub); the frontend does not collect provider passwords.
 - Keep the Privacy Policy's browser-storage details aligned with `src/js/auth.js`: `kanban-auth` in local storage contains the access token and expiry; `kanban-auth-pending` in session storage contains temporary PKCE verifier/state and return-search state during authorization.
 - The current account-deletion process is manual by email to `admin@ikoyski.top`. Do not document self-service deletion until it is implemented and deployed.
 - Do not state that a provider or feature (for example email delivery, CAPTCHA/Turnstile, analytics, or avatar generation) is active unless verified in the current frontend, backend/auth configuration and deployed infrastructure.
