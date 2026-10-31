@@ -158,10 +158,149 @@ test.describe('authenticated board workflows', () => {
         expect(api.calls.some(call => call.method === 'GET' && call.path === '/v1/boards/second-board')).toBeTruthy();
     });
 
+    test('invites a board member with the selected role', async ({ page }) => {
+        await page.locator('#profile-trigger').click();
+        await page.locator('#members-menu').click();
+        await expect(page.locator('#members-modal')).toBeVisible();
+        await expect(page.locator('#members-list')).toContainText('Taylor Member');
+
+        await page.locator('#invite-email').fill('jordan@example.test');
+        await page.locator('#invite-role').selectOption('VIEWER');
+        await page.locator('#invite-member-form button[type="submit"]').click();
+
+        await expect(page.locator('#members-list')).toContainText('jordan@example.test');
+        await expect(page.locator('#members-list')).toContainText('VIEWER');
+        const inviteCall = api.calls.find(
+            call => call.method === 'POST' && call.path === '/v1/boards/demo-board/members'
+        );
+        expect(inviteCall).toBeTruthy();
+        expect(inviteCall.body).toEqual({
+            email: 'jordan@example.test',
+            role: 'VIEWER',
+        });
+    });
+
+    test('removes a board member after confirmation', async ({ page }) => {
+        page.once('dialog', dialog => dialog.accept());
+
+        await page.locator('#profile-trigger').click();
+        await page.locator('#members-menu').click();
+        await expect(page.locator('#members-list')).toContainText('Taylor Member');
+
+        await page.locator('#members-list button[data-user-id="member-1"]').click();
+
+        await expect(page.locator('#members-list')).not.toContainText('Taylor Member');
+        expect(api.calls.some(call =>
+            call.method === 'DELETE' &&
+            call.path === '/v1/boards/demo-board/members/member-1'
+        )).toBeTruthy();
+    });
+
+    test('exports the current board as a JSON download', async ({ page }) => {
+        await page.evaluate(() => {
+            const originalClick = HTMLAnchorElement.prototype.click;
+            HTMLAnchorElement.prototype.click = function () {
+                if (this.hasAttribute('download')) {
+                    window.__capturedDownload = {
+                        href: this.href,
+                        filename: this.download,
+                    };
+                    return;
+                }
+                originalClick.call(this);
+            };
+        });
+
+        await page.locator('#profile-trigger').click();
+        await page.locator('#export-menu').click();
+
+        await expect.poll(() => page.evaluate(() => window.__capturedDownload || null))
+            .not.toBeNull();
+
+        const download = await page.evaluate(() => window.__capturedDownload);
+        expect(download.filename).toBe('kanban-data.json');
+        const exportedBoard = JSON.parse(decodeURIComponent(download.href.split(',')[1]));
+        expect(exportedBoard.name).toBe('Demo Board');
+        expect(exportedBoard.cards['sample-card'].title).toBe('Sample task');
+        expect(api.calls.some(call =>
+            call.method === 'GET' && call.path === '/v1/boards/demo-board/export'
+        )).toBeTruthy();
+    });
+
+    test('imports a JSON board and refreshes the displayed board', async ({ page }) => {
+        page.on('dialog', dialog => dialog.accept());
+
+        const importedBoard = {
+            id: 'demo-board',
+            name: 'Imported Regression Board',
+            columns: {
+                todo: {
+                    id: 'todo',
+                    title: 'Imported To Do',
+                    position: 0,
+                    cardIds: ['imported-card'],
+                },
+            },
+            cards: {
+                'imported-card': {
+                    id: 'imported-card',
+                    title: 'Imported task from JSON',
+                    description: 'Imported by the browser regression test.',
+                    priority: 'LOW',
+                    dueDate: '',
+                    labels: ['Import'],
+                    commentCount: 0,
+                    createdAt: '2026-10-31T00:00:00Z',
+                },
+            },
+        };
+
+        await page.locator('#import-file').setInputFiles({
+            name: 'kanban-data.json',
+            mimeType: 'application/json',
+            buffer: Buffer.from(JSON.stringify(importedBoard)),
+        });
+
+        await expect(page.locator('#board-name')).toContainText('Imported Regression Board');
+        await expect(page.locator('#board-container .card'))
+            .toContainText('Imported task from JSON');
+
+        const importCall = api.calls.find(
+            call => call.method === 'PUT' && call.path === '/v1/boards/demo-board/import'
+        );
+        expect(importCall).toBeTruthy();
+        expect(importCall.body.name).toBe('Imported Regression Board');
+    });
+
     test('toggles dark mode from the profile menu', async ({ page }) => {
         await page.locator('#profile-trigger').click();
         await page.locator('#theme-toggle-menu').click();
         await expect(page.locator('html')).toHaveClass(/dark/);
         await expect(page.locator('#menu-dropdown')).toBeHidden();
+    });
+});
+
+test.describe('viewer role restrictions', () => {
+    test('hides write controls and prevents card edits for viewers', async ({ page }) => {
+        await installCdnStubs(page);
+        const api = await mockKanbanApi(page, { role: 'VIEWER' });
+        await page.goto('/kanban.html');
+
+        await expect(page.locator('#app-board-view')).toBeVisible();
+        await expect(page.locator('#board-name')).toContainText('view only');
+        await expect(page.locator('#rename-board-btn')).toBeHidden();
+        await expect(page.locator('.add-card-btn')).toBeHidden();
+        await expect(page.locator('.delete-btn')).toBeHidden();
+
+        await page.locator('.card[data-card-id="sample-card"]').click();
+        await expect(page.locator('#card-detail-modal')).toBeVisible();
+        await expect(page.locator('#archive-card-btn')).toBeHidden();
+        await expect(page.locator('#delete-card-btn')).toBeHidden();
+
+        await page.locator('.detail-title').click();
+        await expect(page.locator('.detail-title .inline-edit-input')).toHaveCount(0);
+        await page.locator('.detail-priority [data-priority="HIGH"]').click();
+
+        expect(api.calls.filter(call => !['GET', 'OPTIONS'].includes(call.method))).toHaveLength(0);
     });
 });
