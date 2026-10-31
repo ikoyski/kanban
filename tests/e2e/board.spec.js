@@ -289,7 +289,11 @@ test.describe('viewer role restrictions', () => {
         await expect(page.locator('#app-board-view')).toBeVisible();
         await expect(page.locator('#board-name')).toContainText('view only');
         await expect(page.locator('#rename-board-btn')).toBeHidden();
-        await expect(page.locator('.add-card-btn')).toBeHidden();
+        const addCardButtons = await page.locator('.add-card-btn').all();
+        expect(addCardButtons.length).toBeGreaterThan(0);
+        for (const button of addCardButtons) {
+            await expect(button).toBeHidden();
+        }
         await expect(page.locator('.delete-btn')).toBeHidden();
 
         await page.locator('.card[data-card-id="sample-card"]').click();
