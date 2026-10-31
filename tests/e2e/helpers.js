@@ -132,6 +132,8 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
     };
     const boardList = Object.values(boards).map(({ id, name }) => ({ id, name }));
     const calls = [];
+    const commentsByCard = {};
+    const archivedCards = {};
 
     if (seedToken) await seedAuthenticatedSession(page);
 
@@ -205,8 +207,82 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
             return;
         }
 
-        if (method === 'GET' && /^\/v1\/comments\/card\//.test(path)) {
-            await respond([]);
+        const commentsMatch = path.match(/^\/v1\/comments\/card\/([^/]+)$/);
+        if (commentsMatch && method === 'GET') {
+            await respond(commentsByCard[commentsMatch[1]] || []);
+            return;
+        }
+
+        if (commentsMatch && method === 'POST') {
+            const comment = {
+                id: `comment-${calls.length}`,
+                userName: 'Playwright User',
+                createdAt: new Date().toISOString(),
+                content: request.postDataJSON().content,
+            };
+            commentsByCard[commentsMatch[1]] ??= [];
+            commentsByCard[commentsMatch[1]].push(comment);
+            await respond(comment, 201);
+            return;
+        }
+
+        const deleteCommentMatch = path.match(/^\/v1\/comments\/([^/]+)$/);
+        if (deleteCommentMatch && method === 'DELETE') {
+            Object.keys(commentsByCard).forEach(cardId => {
+                commentsByCard[cardId] = commentsByCard[cardId].filter(
+                    comment => comment.id !== deleteCommentMatch[1]
+                );
+            });
+            await respond(null, 204);
+            return;
+        }
+
+        const archivedListMatch = path.match(/^\/v1\/cards\/board\/([^/]+)\/archived$/);
+        if (archivedListMatch && method === 'GET') {
+            await respond(archivedCards[archivedListMatch[1]] || []);
+            return;
+        }
+
+        const archiveMatch = path.match(/^\/v1\/cards\/([^/]+)\/archive$/);
+        if (archiveMatch && method === 'POST') {
+            const cardId = archiveMatch[1];
+            const board = Object.values(boards).find(item => item.cards[cardId]);
+            if (!board) {
+                await respond({ message: 'Card not found' }, 404);
+                return;
+            }
+            const sourceColumn = Object.values(board.columns).find(column => column.cardIds.includes(cardId));
+            const card = board.cards[cardId];
+            archivedCards[board.id] ??= [];
+            archivedCards[board.id].push({
+                ...card,
+                archivedAt: new Date().toISOString(),
+                originalColumnId: sourceColumn?.id || 'todo',
+            });
+            if (sourceColumn) sourceColumn.cardIds = sourceColumn.cardIds.filter(id => id !== cardId);
+            delete board.cards[cardId];
+            await respond(null, 204);
+            return;
+        }
+
+        const restoreMatch = path.match(/^\/v1\/cards\/([^/]+)\/restore$/);
+        if (restoreMatch && method === 'POST') {
+            const cardId = restoreMatch[1];
+            const boardId = Object.keys(archivedCards).find(id =>
+                archivedCards[id].some(card => card.id === cardId)
+            );
+            const board = boardId ? boards[boardId] : null;
+            if (!board) {
+                await respond({ message: 'Archived card not found' }, 404);
+                return;
+            }
+            const index = archivedCards[boardId].findIndex(card => card.id === cardId);
+            const [card] = archivedCards[boardId].splice(index, 1);
+            const { archivedAt, originalColumnId, ...restoredCard } = card;
+            board.cards[cardId] = restoredCard;
+            const destination = board.columns[originalColumnId] || board.columns.todo;
+            destination.cardIds.push(cardId);
+            await respond(null, 204);
             return;
         }
 
@@ -278,5 +354,5 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
         await respond({ message: `Unhandled test API request: ${method} ${path}` }, 404);
     });
 
-    return { boards, calls };
+    return { boards, calls, commentsByCard, archivedCards };
 }
