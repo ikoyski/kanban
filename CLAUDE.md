@@ -90,6 +90,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 
 ### Legal pages and privacy-sensitive changes
 - `index.html` is the public landing page; `terms.html` and `privacy.html` are user-facing legal disclosures. Update them when authentication, browser storage, third-party providers, AI/MCP capabilities, data retention or account deletion behavior changes.
+- **Public sign-in copy**: `index.html` should state that Google and GitHub are supported sign-in providers. Keep `terms.html` and `privacy.html` aligned with the providers actually enabled on the auth server.
 - Authentication uses configured federated providers through `https://auth.ikoyski.top` (currently Google and GitHub); the frontend does not collect provider passwords.
 - Keep the Privacy Policy's browser-storage details aligned with `src/js/auth.js`: `kanban-auth` in local storage contains the access token and expiry; `kanban-auth-pending` in session storage contains temporary PKCE verifier/state and return-search state during authorization.
 - The current account-deletion process is manual by email to `admin@ikoyski.top`. Do not document self-service deletion until it is implemented and deployed.
@@ -103,7 +104,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 ### Browser regression tests
 - Use Playwright for end-to-end regression coverage; keep the frontend vanilla JavaScript and do not add a frontend framework or build step just for testing.
 - Run `npm install`, `npx playwright install chromium`, then `npm run test:e2e` (Node.js 22+). The Playwright config starts a small static HTTP server; do not test the app through `file://` because component partials are loaded with `fetch`.
-- Tests stub Tailwind/SortableJS/Quill/DOMPurify CDN dependencies and mock `auth.ikoyski.top` plus `api.ikoyski.top`. Never use real Google credentials, production tokens or live user data in automated tests.
+- Tests stub Tailwind/SortableJS/Quill/DOMPurify CDN dependencies and mock `auth.ikoyski.top` plus `api.ikoyski.top`. Never use real Google or GitHub credentials, production tokens or live user data in automated tests.
 - Keep API fixtures representative of the current backend DTOs and assert Bearer authorization is sent. Update the fixtures when API contracts intentionally change.
 - The GitHub Actions workflow `.github/workflows/playwright.yml` runs Chromium E2E tests on pushes and pull requests to `master`. Inspect the Playwright HTML report and trace artifacts for failures.
 - Current coverage includes OAuth/PKCE initiation and callback handling, board startup/search, card title and priority edits, create/delete, comment submission, cross-column move persistence through the mocked SortableJS `onEnd` callback, archive/restore, member invitation/removal, viewer-role UI restrictions, board JSON import/export, board switching and dark mode.
