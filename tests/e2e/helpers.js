@@ -1,12 +1,12 @@
 export const API_ORIGIN = 'https://api.ikoyski.top';
 export const API_PREFIX = '/kanban-backend';
 
-export function makeBoard(id = 'demo-board', name = 'Demo Board') {
+export function makeBoard(id = 'demo-board', name = 'Demo Board', role = 'OWNER') {
     const sampleCardId = id === 'demo-board' ? 'sample-card' : `sample-card-${id}`;
     return {
         id,
         name,
-        role: 'OWNER',
+        role,
         columns: {
             todo: {
                 id: 'todo',
@@ -125,15 +125,24 @@ export async function seedAuthenticatedSession(page) {
     });
 }
 
-export async function mockKanbanApi(page, { seedToken = true } = {}) {
+export async function mockKanbanApi(page, { seedToken = true, role = 'OWNER' } = {}) {
     const boards = {
-        'demo-board': makeBoard(),
-        'second-board': makeBoard('second-board', 'Second Board'),
+        'demo-board': makeBoard('demo-board', 'Demo Board', role),
+        'second-board': makeBoard('second-board', 'Second Board', role),
     };
     const boardList = Object.values(boards).map(({ id, name }) => ({ id, name }));
     const calls = [];
     const commentsByCard = {};
     const archivedCards = {};
+    const membersByBoard = {
+        'demo-board': [
+            { userId: 'owner-1', displayName: 'Playwright User', email: 'playwright@example.test', role: 'OWNER' },
+            { userId: 'member-1', displayName: 'Taylor Member', email: 'taylor@example.test', role: 'EDITOR' },
+        ],
+        'second-board': [
+            { userId: 'owner-1', displayName: 'Playwright User', email: 'playwright@example.test', role: 'OWNER' },
+        ],
+    };
 
     if (seedToken) await seedAuthenticatedSession(page);
 
@@ -204,6 +213,62 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
         if (method === 'GET' && boardMatch) {
             const board = boards[boardMatch[1]];
             await respond(board ? JSON.parse(JSON.stringify(board)) : { message: 'Board not found' }, board ? 200 : 404);
+            return;
+        }
+
+        const membersMatch = path.match(/^\/v1\/boards\/([^/]+)\/members$/);
+        if (membersMatch && method === 'GET') {
+            await respond(membersByBoard[membersMatch[1]] || []);
+            return;
+        }
+
+        if (membersMatch && method === 'POST') {
+            const boardId = membersMatch[1];
+            const body = request.postDataJSON();
+            const member = {
+                userId: `member-${calls.length}`,
+                displayName: body.email.split('@')[0],
+                email: body.email,
+                role: body.role,
+            };
+            membersByBoard[boardId] ??= [];
+            membersByBoard[boardId].push(member);
+            await respond(member, 201);
+            return;
+        }
+
+        const memberMatch = path.match(/^\/v1\/boards\/([^/]+)\/members\/([^/]+)$/);
+        if (memberMatch && method === 'DELETE') {
+            const [, boardId, userId] = memberMatch;
+            membersByBoard[boardId] = (membersByBoard[boardId] || []).filter(
+                member => member.userId !== userId
+            );
+            await respond(null, 204);
+            return;
+        }
+
+        const exportMatch = path.match(/^\/v1\/boards\/([^/]+)\/export$/);
+        if (exportMatch && method === 'GET') {
+            const board = boards[exportMatch[1]];
+            await respond(board ? JSON.parse(JSON.stringify(board)) : { message: 'Board not found' }, board ? 200 : 404);
+            return;
+        }
+
+        const importMatch = path.match(/^\/v1\/boards\/([^/]+)\/import$/);
+        if (importMatch && method === 'PUT') {
+            const boardId = importMatch[1];
+            const existingBoard = boards[boardId];
+            if (!existingBoard) {
+                await respond({ message: 'Board not found' }, 404);
+                return;
+            }
+            const importedBoard = request.postDataJSON();
+            boards[boardId] = {
+                ...JSON.parse(JSON.stringify(importedBoard)),
+                id: boardId,
+                role: existingBoard.role,
+            };
+            await respond(null, 204);
             return;
         }
 
@@ -354,5 +419,5 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
         await respond({ message: `Unhandled test API request: ${method} ${path}` }, 404);
     });
 
-    return { boards, calls, commentsByCard, archivedCards };
+    return { boards, calls, commentsByCard, archivedCards, membersByBoard };
 }
