@@ -279,3 +279,28 @@ test.describe('authenticated board workflows', () => {
         await expect(page.locator('#menu-dropdown')).toBeHidden();
     });
 });
+
+test.describe('viewer role restrictions', () => {
+    test('hides write controls and prevents card edits for viewers', async ({ page }) => {
+        await installCdnStubs(page);
+        const api = await mockKanbanApi(page, { role: 'VIEWER' });
+        await page.goto('/kanban.html');
+
+        await expect(page.locator('#app-board-view')).toBeVisible();
+        await expect(page.locator('#board-name')).toContainText('view only');
+        await expect(page.locator('#rename-board-btn')).toBeHidden();
+        await expect(page.locator('.add-card-btn')).toBeHidden();
+        await expect(page.locator('.delete-btn')).toBeHidden();
+
+        await page.locator('.card[data-card-id="sample-card"]').click();
+        await expect(page.locator('#card-detail-modal')).toBeVisible();
+        await expect(page.locator('#archive-card-btn')).toBeHidden();
+        await expect(page.locator('#delete-card-btn')).toBeHidden();
+
+        await page.locator('.detail-title').click();
+        await expect(page.locator('.detail-title .inline-edit-input')).toHaveCount(0);
+        await page.locator('.detail-priority [data-priority="HIGH"]').click();
+
+        expect(api.calls.filter(call => !['GET', 'OPTIONS'].includes(call.method))).toHaveLength(0);
+    });
+});
