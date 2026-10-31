@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 - **Run App**: Serve the repository over HTTP (for example, `python -m http.server 8000`) and open `http://localhost:8000/kanban.html`. The app loads HTML partials with `fetch()`, so do not open `kanban.html` using `file://`. The static landing/legal pages can still be opened directly, but using the local server is recommended.
-- **Build/Test**: No build process or automated test suite is currently implemented. The HTML partial loader has no framework or build-time dependency.
+- **Build/Test**: No build step is required. Playwright E2E tests run with `npm run test:e2e` (Node.js 22+); install browser dependencies with `npx playwright install chromium` first. The HTML partial loader has no framework or build-time dependency.
 
 ## Architecture and Structure
 The project is a vanilla JavaScript implementation of a Kanban board using ES6 modules.
@@ -105,4 +105,5 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - Tests stub Tailwind/SortableJS/Quill/DOMPurify CDN dependencies and mock `auth.ikoyski.top` plus `api.ikoyski.top`. Never use real Google credentials, production tokens or live user data in automated tests.
 - Keep API fixtures representative of the current backend DTOs and assert Bearer authorization is sent. Update the fixtures when API contracts intentionally change.
 - The GitHub Actions workflow `.github/workflows/playwright.yml` runs Chromium E2E tests on pushes and pull requests to `master`. Inspect the Playwright HTML report and trace artifacts for failures.
-- Extend coverage for drag-and-drop, card comments, archive/restore, import/export, members/roles and MCP integration as those flows are stabilized. Do not claim those flows are covered until tests exist.
+- Current coverage includes OAuth/PKCE initiation and callback handling, board startup/search, card title and priority edits, create/delete, comment submission, cross-column move persistence through the mocked SortableJS `onEnd` callback, archive/restore, board switching and dark mode.
+- The move test invokes SortableJS's callback directly; it does not yet validate a real pointer-driven drag gesture. Extend coverage for import/export, members/roles, real drag gestures and MCP integration as those flows are stabilized. Do not claim those flows are covered until tests exist.
