@@ -65,7 +65,7 @@ A modern, responsive Kanban board implementation featuring drag-and-drop functio
 - **SortableJS** (for drag-and-drop)
 - **Quill** (WYSIWYG rich-text editor for card descriptions and comments)
 - **DOMPurify** (sanitizes rich-text HTML before it's rendered)
-- **OAuth 2.0 + PKCE** (Google sign-in through the auth server)
+- **OAuth 2.0 + PKCE** (Google and GitHub sign-in through the auth server)
 
 ## Rich Text (WYSIWYG)
 
@@ -119,7 +119,7 @@ This is a vanilla JavaScript project with ES6 modules and CDN-hosted dependencie
 
 This repository contains the browser-based frontend only. Authentication and Kanban data APIs are provided by separate services:
 
-- **Authentication server**: `https://auth.ikoyski.top`. The frontend uses the pre-registered public OAuth client `kanban-web` with the authorization-code flow and PKCE. Google sign-in is handled by the authentication server; the frontend does not collect Google passwords.
+- **Authentication server**: `https://auth.ikoyski.top`. The frontend uses the pre-registered public OAuth client `kanban-web` with the authorization-code flow and PKCE. Google and GitHub sign-in are handled by the authentication server; the frontend does not collect provider passwords.
 - **Kanban API**: `https://api.ikoyski.top/kanban-backend`. The frontend calls versioned endpoints under `/v1/...` and sends the OAuth access token as a Bearer token. The backend remains responsible for authorization and persistence.
 - **Browser token storage**: the access token and expiry are stored in local storage under `kanban-auth`. The temporary PKCE verifier and OAuth state are stored in session storage under `kanban-auth-pending` while the sign-in redirect is in progress. The profile is loaded from the authenticated API rather than decoded from the access token.
 
@@ -135,8 +135,8 @@ AI operations are performed with the user's authorization and are subject to the
 
 Keep `terms.html` and `privacy.html` consistent with the actual deployed services and data flows. In particular:
 
-- Describe Google federated sign-in, not local Kanban password registration.
-- Do not claim the frontend receives or stores Google passwords.
+- Describe Google and GitHub federated sign-in, not local Kanban password registration.
+- Do not claim the frontend receives or stores provider passwords.
 - Keep browser storage disclosures aligned with `src/js/auth.js`.
 - Disclose MCP/AI assistant data processing and name currently supported providers accurately.
 - Account deletion is currently a manual request to `admin@ikoyski.top`; do not describe it as an available self-service feature.
