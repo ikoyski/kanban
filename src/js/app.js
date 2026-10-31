@@ -1,6 +1,6 @@
 import ApiClient from './api.js';
 import * as Auth from './auth.js';
-import { UI } from './ui.js';
+import { UI } from './ui.js?v=20261101-members-avatar-fix';
 import { toPlainText } from './editor.js';
 
 class KanbanApp {
