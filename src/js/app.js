@@ -177,15 +177,6 @@ class KanbanApp {
             }
         });
 
-        // Sign in with Google (through the auth server)
-        document.getElementById('google-signin-btn').onclick = () => {
-            this.showAuthMessage(null);
-            Auth.startLogin().catch(error => {
-                console.error('Could not start sign-in:', error);
-                this.showAuthMessage('Could not start sign-in: ' + error.message);
-            });
-        };
-
         // The token is missing, expired or rejected (401)
         window.addEventListener('auth-expired', () => this.handleSessionExpired());
     }
