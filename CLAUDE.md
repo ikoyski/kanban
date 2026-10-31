@@ -67,3 +67,23 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
     `UI.startRichEdit` / `createRichEditor` — editors are destroyed and recreated whenever the
     modal re-renders (e.g. after any inline edit), so don't hold a long-lived reference to a
     Quill instance across a `UI.openCardDetail()` call.
+
+
+### AI assistant / MCP integration boundary
+- This repository is the web frontend; it does **not** implement the MCP server. MCP is provided by the separate `ikoyski/webtools-kanban-mcp` service.
+- The MCP service is configured as a separate OAuth resource/client integration. Do not add MCP server endpoints, tool definitions or token-validation logic to this frontend unless the architecture is intentionally changed.
+- The MCP service validates the caller's access token and forwards the original Bearer token to the Kanban API. Backend authorization remains authoritative; never assume that hiding a UI control grants or denies API access.
+- Supported AI clients include Google Gemini and Anthropic Claude, with OpenAI ChatGPT available where configured. Keep provider availability claims qualified by the deployed client configuration.
+- MCP actions may read and modify boards, columns, cards and comments. Any frontend copy or legal disclosure must explain that assistant prompts and returned Kanban content may be processed by the selected AI provider under that provider's policies.
+- Never place OAuth client secrets, signing keys, user access tokens or other credentials in this public frontend repository. The browser client is a public PKCE client and must not contain a client secret.
+
+### Legal pages and privacy-sensitive changes
+- `index.html` is the public landing page; `terms.html` and `privacy.html` are user-facing legal disclosures. Update them when authentication, browser storage, third-party providers, AI/MCP capabilities, data retention or account deletion behavior changes.
+- Authentication is Google federated sign-in through `https://auth.ikoyski.top`; the frontend does not collect Google passwords.
+- Keep the Privacy Policy's browser-storage details aligned with `src/js/auth.js`: `kanban-auth` in local storage contains the access token and expiry; `kanban-auth-pending` in session storage contains temporary PKCE verifier/state and return-search state during authorization.
+- The current account-deletion process is manual by email to `admin@ikoyski.top`. Do not document self-service deletion until it is implemented and deployed.
+- Do not state that a provider or feature (for example email delivery, CAPTCHA/Turnstile, analytics, or avatar generation) is active unless verified in the current frontend, backend/auth configuration and deployed infrastructure.
+- Legal copy should describe actual behavior, avoid guarantees about immediate backup erasure or provider retention, and receive appropriate legal review. Do not present documentation edits as legal certification.
+
+### Landing page authentication indicator
+- The landing page sign-in indicator reads `kanban-auth` from local storage. Keep its expected shape aligned with `auth.js` (`accessToken` and `expiresAt`) and avoid reviving the legacy `kanban-token` key.
