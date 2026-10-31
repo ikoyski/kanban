@@ -16,9 +16,9 @@ test('loads the sign-in view and starts OAuth with PKCE', async ({ page }) => {
 
     await page.goto('/kanban.html');
     await expect(page.locator('#app-auth-view')).toBeVisible();
-    await expect(page.getByRole('button', { name: /continue with google/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /continue to sign in/i })).toBeVisible();
 
-    await page.getByRole('button', { name: /continue with google/i }).click();
+    await page.getByRole('button', { name: /continue to sign in/i }).click();
 
     await expect.poll(() => authorizationUrl?.searchParams.get('code_challenge_method')).toBe('S256');
     expect(authorizationUrl.searchParams.get('client_id')).toBe('kanban-web');
