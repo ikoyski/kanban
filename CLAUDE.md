@@ -97,3 +97,12 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 
 ### Landing page authentication indicator
 - The landing page sign-in indicator reads `kanban-auth` from local storage. Keep its expected shape aligned with `auth.js` (`accessToken` and `expiresAt`) and avoid reviving the legacy `kanban-token` key.
+
+
+### Browser regression tests
+- Use Playwright for end-to-end regression coverage; keep the frontend vanilla JavaScript and do not add a frontend framework or build step just for testing.
+- Run `npm install`, `npx playwright install chromium`, then `npm run test:e2e` (Node.js 22+). The Playwright config starts a small static HTTP server; do not test the app through `file://` because component partials are loaded with `fetch`.
+- Tests stub Tailwind/SortableJS/Quill/DOMPurify CDN dependencies and mock `auth.ikoyski.top` plus `api.ikoyski.top`. Never use real Google credentials, production tokens or live user data in automated tests.
+- Keep API fixtures representative of the current backend DTOs and assert Bearer authorization is sent. Update the fixtures when API contracts intentionally change.
+- The GitHub Actions workflow `.github/workflows/playwright.yml` runs Chromium E2E tests on pushes and pull requests to `master`. Inspect the Playwright HTML report and trace artifacts for failures.
+- Extend coverage for drag-and-drop, card comments, archive/restore, import/export, members/roles and MCP integration as those flows are stabilized. Do not claim those flows are covered until tests exist.
