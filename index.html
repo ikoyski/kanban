@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free Open-Source Kanban Board with Sharing &amp; Rich-Text Cards</title>
-    <meta name="description" content="Free, open-source kanban board. Drag cards between columns, share boards as Owner, Editor or Viewer, and keep rich-text notes on every card.">
+    <meta name="description" content="Free, open-source kanban board. Organize tasks, share boards, write rich-text cards, and manage your workflow with supported AI assistants through MCP.">
     <link rel="canonical" href="https://pages.ikoyski.top/kanban/">
     <meta name="theme-color" content="#2563eb">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Kanban">
     <meta property="og:title" content="Free Open-Source Kanban Board with Sharing &amp; Rich-Text Cards">
-    <meta property="og:description" content="Plan work in columns and move it as it changes. Share boards, set who can edit, and keep notes on every card.">
+    <meta property="og:description" content="Plan work in columns, share boards, write rich-text cards, and manage tasks with supported AI assistants.">
     <meta property="og:url" content="https://pages.ikoyski.top/kanban/">
     <meta property="og:image" content="https://pages.ikoyski.top/kanban/og-image.png">
     <meta property="og:image:width" content="1200">
@@ -18,7 +18,7 @@
     <meta property="og:image:alt" content="Kanban board with To do, In progress and Done columns">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Free Open-Source Kanban Board with Sharing &amp; Rich-Text Cards">
-    <meta name="twitter:description" content="Drag cards between columns, share boards with your team, and keep rich-text notes on every card.">
+    <meta name="twitter:description" content="Drag cards between columns, share boards, keep rich-text notes, and manage tasks with supported AI assistants.">
     <meta name="twitter:image" content="https://pages.ikoyski.top/kanban/og-image.png">
     <script type="application/ld+json">
 {
@@ -164,6 +164,10 @@
                     <h2 class="font-display font-extrabold text-2xl tracking-tight">Run several boards</h2>
                     <p class="mt-3 text-slate-600 dark:text-slate-300 leading-relaxed">Keep work, side projects and home tasks on separate boards. It works on phones and tablets, in light or dark mode.</p>
                 </div>
+                <div>
+                    <h2 class="font-display font-extrabold text-2xl tracking-tight">Work with AI assistants</h2>
+                    <p class="mt-3 text-slate-600 dark:text-slate-300 leading-relaxed">Connect supported assistants such as Google Gemini, Anthropic Claude and OpenAI ChatGPT through the Model Context Protocol (MCP), where available. Ask your assistant to find boards, create or update cards, move tasks and add comments. Actions use your authorized Kanban access.</p>
+                </div>
             </div>
         </section>
 
@@ -189,6 +193,10 @@
                         <dd class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Yes. Kanban is open source under the GPL-3.0 license, and the code is on <a href="https://github.com/ikoyski/kanban" class="text-primary-600 dark:text-primary-400 underline" rel="noopener">GitHub</a>.</dd>
                     </div>
                     <div>
+                        <dt class="font-semibold text-lg">Can I manage Kanban with an AI assistant?</dt>
+                        <dd class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Yes. Supported assistants such as Google Gemini, Anthropic Claude and OpenAI ChatGPT can connect through MCP where available. After you authorize an assistant, it can use supported board and card actions within your account permissions. The AI provider processes your prompts and the information you choose to share with it under its own policies.</dd>
+                    </div>
+                    <div>
                         <dt class="font-semibold text-lg">Does it work on my phone?</dt>
                         <dd class="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">Yes. The board works in the browser on phones, tablets and desktops, in light or dark mode.</dd>
                     </div>
@@ -211,7 +219,8 @@
     <script>
         // Signed-in visitors get a direct link to their boards.
         try {
-            if (localStorage.getItem('kanban-token')) {
+            var auth = JSON.parse(localStorage.getItem('kanban-auth') || 'null');
+            if (auth && auth.accessToken && auth.expiresAt > Date.now()) {
                 document.querySelectorAll('[data-app-link]').forEach(function (a, i) {
                     a.textContent = i === 0 ? 'Open Kanban' : 'Open your boards';
                 });
