@@ -1021,7 +1021,15 @@ class KanbanApp {
     }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function initializeKanbanApp() {
     const app = new KanbanApp();
     await app.start();
-});
+}
+
+// bootstrap.js loads HTML partials before importing this module. That fetch can
+// finish after DOMContentLoaded has already fired, so support both startup states.
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeKanbanApp, { once: true });
+} else {
+    initializeKanbanApp();
+}
