@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - Kanban</title>
-    <meta name="description" content="Privacy Policy for Kanban, the free open-source kanban board.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#2563eb">
+    <title>Privacy Policy | Kanban</title>
+    <meta name="description" content="Learn what information Kanban collects, how account and board data is used, and how Google sign-in, AI integrations, service providers and privacy requests are handled.">
     <link rel="canonical" href="https://pages.ikoyski.top/kanban/privacy.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Kanban">
-    <meta property="og:title" content="Privacy Policy - Kanban">
+    <meta property="og:title" content="Privacy Policy | Kanban">
+    <meta property="og:description" content="Learn what information Kanban collects, how account and board data is used, and how Google sign-in, AI integrations, service providers and privacy requests are handled.">
     <meta property="og:url" content="https://pages.ikoyski.top/kanban/privacy.html">
     <meta property="og:image" content="https://pages.ikoyski.top/kanban/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Kanban Privacy Policy">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Privacy Policy | Kanban">
+    <meta name="twitter:description" content="Learn what information Kanban collects, how account and board data is used, and how Google sign-in, AI integrations, service providers and privacy requests are handled.">
+    <meta name="twitter:image" content="https://pages.ikoyski.top/kanban/og-image.png">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,8 +47,16 @@
             } }
         }
     </script>
+    <style>
+        :focus-visible { outline: 3px solid #60a5fa; outline-offset: 3px; }
+        .skip-link { position: absolute; left: 1rem; top: -5rem; z-index: 100; padding: .75rem 1rem; border-radius: .75rem; background: #1d4ed8; color: white; font-weight: 600; }
+        .skip-link:focus { top: 1rem; }
+        html { scroll-behavior: smooth; }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="max-w-6xl w-full mx-auto px-5 py-5 flex items-center justify-between">
         <a href="./" class="flex items-center gap-3">
             <span class="bg-primary-600 text-white p-2 rounded-lg shadow-lg">
@@ -46,57 +64,75 @@
             </span>
             <span class="font-display font-extrabold text-xl tracking-tight">Kanban</span>
         </a>
-        <div class="flex items-center gap-3">
+        <nav aria-label="Primary navigation" class="flex items-center gap-3">
             <button type="button" id="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle light/dark theme" class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                 <svg class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                 <svg class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
             </button>
             <a href="kanban.html" class="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold transition-colors">Open Kanban</a>
-        </div>
+        </nav>
     </header>
-    <main class="flex-1 max-w-2xl w-full mx-auto px-5 pt-8 pb-16 leading-relaxed text-slate-700 dark:text-slate-300">
-        <h1 class="font-display font-extrabold text-4xl tracking-tight text-slate-900 dark:text-slate-100">Privacy Policy</h1>
+    <main id="main-content" aria-labelledby="page-title" class="flex-1 max-w-3xl w-full mx-auto px-5 pt-8 pb-16 leading-relaxed text-slate-700 dark:text-slate-300">
+        <h1 id="page-title" class="font-display font-extrabold text-4xl tracking-tight text-slate-900 dark:text-slate-100">Privacy Policy</h1>
         <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Last updated October 2026</p>
         <p class="mt-6 mb-4">This policy explains what information Kanban collects, how it is used and shared, and the choices available to you. It describes the hosted service as currently operated.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Who runs Kanban</h2>
+<nav aria-label="On this page" class="mt-8 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 sm:p-6">
+            <p class="font-semibold text-slate-900 dark:text-slate-100">On this page</p>
+            <ul class="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#who-runs-kanban">Who runs Kanban</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#information-i-collect">Information I collect</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#information-stored-in-your-browser">Information stored in your browser</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#how-i-use-information">How I use information</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#service-providers-and-third-parties">Service providers and third parties</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#ai-assistants-and-mcp-integrations">AI assistants and MCP integrations</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#who-can-see-your-content">Who can see your content</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#retention-and-account-deletion">Retention and account deletion</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#your-privacy-rights">Your privacy rights</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#security">Security</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#children">Children</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#changes-to-this-policy">Changes to this policy</a></li>
+                <li><a class="text-primary-700 dark:text-primary-300 underline underline-offset-2 hover:no-underline" href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+<h2 id="who-runs-kanban" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Who runs Kanban</h2>
 <p class="mb-4">Kanban is a personal project operated by ikoyski in the Philippines. In this policy, “I” and “me” refer to the operator. You can reach me using the details in the Contact section.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Information I collect</h2>
+<h2 id="information-i-collect" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Information I collect</h2>
 <ul class="list-disc pl-5 space-y-1.5 mb-4"><li><strong>Account and identity information:</strong> when you sign in with Google through the Kanban authentication service, the service receives identity information such as your Google account's stable identifier, email address, display name and profile image URL. Kanban does not receive your Google password.</li><li><strong>Your content:</strong> boards, columns, cards, labels, due dates, comments and board memberships that you create or that others share with you.</li><li><strong>Technical and security information:</strong> IP address, request metadata and authentication or service logs used to operate the service, enforce rate limits, troubleshoot issues and help prevent abuse.</li></ul>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Information stored in your browser</h2>
+<h2 id="information-stored-in-your-browser" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Information stored in your browser</h2>
 <p class="mb-4">The Kanban web application stores an OAuth access token and related expiry information in browser local storage under its application storage key. It also uses browser storage for account display information and preferences such as the selected theme and last opened board. During sign-in, a temporary PKCE verifier and OAuth state are kept in session storage to protect the authorization redirect flow. These values are stored in your browser; signing out clears the application's authentication data. Clearing browser storage may also remove saved preferences. Anyone with access to your browser profile may be able to access information stored there, so protect your device and browser session.</p>
 <p class="mb-4">The public website and application load some third-party scripts, styles, libraries and fonts. Those providers may receive your IP address and standard browser request information when your browser requests those resources. I do not use advertising or analytics cookies as part of the application described here.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">How I use information</h2>
+<h2 id="how-i-use-information" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">How I use information</h2>
 <ul class="list-disc pl-5 space-y-1.5 mb-4"><li>To authenticate you and operate your account.</li><li>To store, display and synchronize boards and content with people you have authorized to access them.</li><li>To operate, secure, troubleshoot and improve the service.</li><li>To respond to support, privacy and account-deletion requests.</li></ul>
 <p class="mb-4">I do not sell personal information or use it for targeted advertising.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Service providers and third parties</h2>
+<h2 id="service-providers-and-third-parties" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Service providers and third parties</h2>
 <p class="mb-4">Kanban relies on service providers and external resources to operate. These may include:</p>
 <ul class="list-disc pl-5 space-y-1.5 mb-4"><li><strong>Google:</strong> provides the federated sign-in identity service. Google processes sign-in activity under its own privacy policy.</li><li><strong>Cloudflare:</strong> provides network, DNS, CDN, firewall and related infrastructure services through which some requests may pass.</li><li><strong>Google Fonts, the Tailwind CSS CDN and jsDelivr:</strong> deliver fonts, styles and frontend libraries to your browser and may receive standard connection information such as your IP address.</li><li><strong>Hosting and database providers:</strong> process or store application data and service infrastructure on my behalf. Kanban account and board data is stored in a PostgreSQL database.</li></ul>
 <p class="mb-4">The service providers and infrastructure used may change as the project evolves. I will update this policy when a material change affects how information is handled.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">AI assistants and MCP integrations</h2>
+<h2 id="ai-assistants-and-mcp-integrations" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">AI assistants and MCP integrations</h2>
 <p class="mb-4">Kanban supports compatible AI assistants through the Model Context Protocol (MCP), including Google Gemini, Anthropic Claude and OpenAI ChatGPT where available. You must authorize an assistant before it can access your Kanban account through this integration.</p>
 <p class="mb-4">When you use an assistant with Kanban, information in your prompts and the Kanban content needed to answer your request may be sent to and processed by the AI provider. Depending on the tools available and your instructions, the assistant may retrieve boards, columns, cards or comments, or create and modify content such as cards, column positions and comments. Actions are authenticated using your access token and are subject to the permissions of your Kanban account.</p>
 <p class="mb-4">The MCP service validates the access token and forwards authorized requests to the Kanban API. The MCP service is designed to be stateless and does not maintain a separate persistent copy of your Kanban content or access tokens. The AI provider may process prompts, responses and information you choose to share according to its own terms, privacy policy, retention settings and data controls. Review the relevant provider policy before connecting an assistant or sharing sensitive information.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Who can see your content</h2>
+<h2 id="who-can-see-your-content" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Who can see your content</h2>
 <p class="mb-4">People you share a board with can access that board's content according to their assigned roles, including information such as your display name, profile image and comments. Content on boards you have not shared is not made available to other users through normal board-sharing features. As the operator, I may access information when reasonably necessary to maintain, secure or support the service.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Retention and account deletion</h2>
+<h2 id="retention-and-account-deletion" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Retention and account deletion</h2>
 <p class="mb-4">I retain account information and content while your account remains active or as needed to operate, secure and maintain the service. You can delete boards and cards yourself and export a board as a JSON file from the app.</p>
 <p class="mb-4">Account deletion is currently handled manually; there is no self-service account deletion feature yet. To request deletion, email <a class="text-primary-600 hover:underline" href="mailto:admin@ikoyski.top">admin@ikoyski.top</a>. I will review and process the request manually. Some information may remain for a limited period in backups, logs or records where retention is necessary for security, operational or legal reasons; such information will be handled in accordance with applicable requirements.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Your privacy rights</h2>
+<h2 id="your-privacy-rights" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Your privacy rights</h2>
 <p class="mb-4">Subject to applicable law, including the Philippine Data Privacy Act of 2012, you may request access to or correction, portability or deletion of your personal information, or exercise other rights available to you. Send requests to the Contact address below. You may also raise a concern with the Philippine National Privacy Commission.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Security</h2>
+<h2 id="security" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Security</h2>
 <p class="mb-4">Traffic to Kanban is protected using HTTPS. I use reasonable measures intended to protect information, but no online service can guarantee absolute security. Keep your Google account, devices and browser profile secure. If a personal data breach requires notification under applicable law, I will provide notice as required.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Children</h2>
+<h2 id="children" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Children</h2>
 <p class="mb-4">Kanban isn’t intended for children. If you believe a child has created an account, email me and I’ll remove it.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Changes to this policy</h2>
+<h2 id="changes-to-this-policy" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Changes to this policy</h2>
 <p class="mb-4">If I change this policy in a way that matters, I’ll update the date above and, for significant changes, tell you in the app or by email.</p>
-<h2 class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3">Contact</h2>
+<h2 id="contact" class="font-display font-extrabold text-xl tracking-tight mt-10 mb-3 scroll-mt-8">Contact</h2>
 <p class="mb-4">Questions or requests: <a class="text-primary-600 hover:underline" href="mailto:admin@ikoyski.top">admin@ikoyski.top</a>.</p>
 
     </main>
     <footer class="border-t border-slate-200 dark:border-slate-800">
         <div class="max-w-6xl mx-auto px-5 py-6 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
             <span>Open source under the GPL-3.0 license. <a href="https://github.com/ikoyski/kanban" class="underline hover:text-primary-600 dark:hover:text-primary-400" rel="noopener">View on GitHub</a></span>
-            <nav class="flex flex-wrap gap-5">
+            <nav aria-label="Footer navigation" class="flex flex-wrap gap-5">
                 <a href="./" class="hover:text-primary-600 dark:hover:text-primary-400">Home</a>
                 <a href="terms.html" class="hover:text-primary-600 dark:hover:text-primary-400">Terms</a>
                 <a href="privacy.html" class="hover:text-primary-600 dark:hover:text-primary-400">Privacy</a>
