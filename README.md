@@ -142,3 +142,28 @@ Keep `terms.html` and `privacy.html` consistent with the actual deployed service
 - Account deletion is currently a manual request to `admin@ikoyski.top`; do not describe it as an available self-service feature.
 - Do not claim that third-party services, email delivery, analytics, CAPTCHA or other infrastructure are in use unless verified against the deployed configuration.
 
+## Frontend browser tests
+
+The frontend uses [Playwright](https://playwright.dev/) for end-to-end regression tests. The tests run the existing static site locally, replace the external CDN libraries with test doubles, and mock the auth/API endpoints. They do not use a real Google account, call the production backend or modify live Kanban data.
+
+### Run locally
+
+Requirements: Node.js 22 or newer.
+
+```bash
+npm install
+npx playwright install chromium
+npm run test:e2e
+```
+
+The test runner starts a small, dependency-free static HTTP server automatically. Do not open `kanban.html` through `file://`; the application loads its HTML components with `fetch` and must be served over HTTP.
+
+Useful commands:
+
+- `npm run test:e2e:headed` — run Chromium with a visible browser.
+- `npm run test:e2e:ui` — open Playwright UI mode.
+- `npm run test:e2e:report` — open the latest HTML report.
+
+The GitHub Actions workflow runs the suite on pushes and pull requests targeting `master`. Failed runs retain traces, screenshots and video in the `playwright-report` / `test-results` artifacts.
+
+The current suite covers partial loading, the Google OAuth/PKCE redirect and callback (using a mocked token endpoint), authenticated board startup, search, card detail, card creation/deletion, board switching and dark mode. Drag-and-drop, comments, archive/restore, import/export and MCP integration remain candidates for later test coverage.
