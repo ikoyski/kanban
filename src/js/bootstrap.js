@@ -1,38 +1,36 @@
 import { loadPartials } from './partial-loader.js';
 import * as Auth from './auth.js';
 
-function bindSignInButton() {
-    const button = document.getElementById('google-signin-btn');
+// Delegate the click from document so the handler remains reliable even though
+// the sign-in button itself is inserted asynchronously by the partial loader.
+document.addEventListener('click', async (event) => {
+    const button = event.target.closest?.('#google-signin-btn');
+    if (!button) return;
+
+    event.preventDefault();
     const message = document.getElementById('auth-message');
+    if (!message || button.disabled) return;
 
-    if (!button || !message) {
-        throw new Error('The sign-in view is missing its button or message element.');
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    message.textContent = 'Connecting to the sign-in service…';
+    message.classList.remove('hidden');
+
+    try {
+        await Auth.startLogin();
+    } catch (error) {
+        console.error('Could not start sign-in:', error);
+        message.textContent = 'Could not start sign-in: ' + error.message;
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
     }
-
-    button.addEventListener('click', async () => {
-        button.disabled = true;
-        button.setAttribute('aria-busy', 'true');
-        message.textContent = '';
-        message.classList.add('hidden');
-
-        try {
-            await Auth.startLogin();
-        } catch (error) {
-            console.error('Could not start sign-in:', error);
-            message.textContent = 'Could not start sign-in: ' + error.message;
-            message.classList.remove('hidden');
-            button.disabled = false;
-            button.removeAttribute('aria-busy');
-        }
-    });
-}
+}, true);
 
 async function bootstrap() {
     try {
         // ui.js queries the DOM as soon as it is imported, so every partial
         // must be present before app.js (and its UI imports) is evaluated.
         await loadPartials();
-        bindSignInButton();
         await import('./app.js');
     } catch (error) {
         console.error('Kanban failed to initialize:', error);
