@@ -39,7 +39,9 @@ test.describe('authenticated board workflows', () => {
 
         await page.locator('#form-title').fill('Regression test card');
         await page.locator('#form-labels').fill('UI, Regression');
-        await page.locator('input[name="priority"][value="HIGH"]').check({ force: true });
+        await page.locator('label').filter({
+            has: page.locator('input[name="priority"][value="HIGH"]'),
+        }).click();
         await page.locator('#card-form button[type="submit"]').click();
 
         await expect(page.locator('.card', { hasText: 'Regression test card' })).toBeVisible();
@@ -66,6 +68,7 @@ test.describe('authenticated board workflows', () => {
     });
 
     test('switches between boards', async ({ page }) => {
+        await page.locator('#profile-trigger').click();
         await page.locator('#board-switcher').selectOption('second-board');
         await expect(page.locator('#board-name')).toContainText('Second Board');
         await expect(page.locator('.card')).toHaveAttribute('data-card-id', 'sample-card-second-board');
