@@ -141,11 +141,18 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
         const path = url.pathname.replace(API_PREFIX, '');
         const method = request.method();
 
+        let requestBody = null;
+        try {
+            if (request.postData()) requestBody = request.postDataJSON();
+        } catch {
+            // Some requests (such as preflight and GET requests) have no JSON body.
+        }
+
         calls.push({
             method,
             path,
             authorization: request.headers().authorization || null,
-            body: request.postDataJSON?.() ?? null,
+            body: requestBody,
         });
 
         const corsHeaders = {
