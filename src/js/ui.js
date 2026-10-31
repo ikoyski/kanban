@@ -424,7 +424,6 @@ export const UI = {
                         <img
                             src="${escapeHtml(avatarUrl)}"
                             data-fallback-src="${escapeHtml(fallbackAvatarUrl)}"
-                            referrerpolicy="no-referrer"
                             class="w-8 h-8 rounded-full object-cover"
                             alt="${escapeHtml(displayName)}"
                         >
