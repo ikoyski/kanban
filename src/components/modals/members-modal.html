@@ -1,0 +1,31 @@
+<div id="members-modal" class="fixed inset-0 z-[85] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"></div>
+        <div class="relative bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl shadow-2xl transform transition-all scale-95 opacity-0 duration-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <h2 class="text-xl font-bold">Board Members</h2>
+                <button id="close-members-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-6">
+                <!-- Invite Member Form -->
+                <div id="invite-member-section" class="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
+                    <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200">Invite New Member</h3>
+                    <form id="invite-member-form" class="flex flex-col sm:flex-row gap-3">
+                        <input type="email" id="invite-email" placeholder="email@example.com" required class="flex-1 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent focus:ring-2 focus:ring-primary-500 outline-none transition-all text-sm">
+                        <select id="invite-role" class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 outline-none transition-all text-sm">
+                            <option value="EDITOR">Editor</option>
+                            <option value="VIEWER">Viewer</option>
+                        </select>
+                        <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg shadow-sm transition-all active:scale-95 text-sm">Invite</button>
+                    </form>
+                </div>
+                <!-- Member List -->
+                <div id="members-list" class="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
+                    <!-- Members will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>

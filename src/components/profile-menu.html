@@ -1,0 +1,106 @@
+<div class="relative">
+                        <button id="profile-trigger" class="flex items-center gap-2 p-1 pr-3 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors group">
+                            <img id="user-avatar" referrerpolicy="no-referrer" src="https://ui-avatars.com/api/?name=" class="w-8 h-8 rounded-full border-2 border-primary-500" alt="Avatar">
+                            <div class="flex items-center gap-2">
+                                <span id="user-name" class="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block">User</span>
+                                <span id="user-role-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary-200 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 hidden sm:block uppercase"></span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="menu-dropdown" class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 hidden z-50 overflow-hidden">
+                            <!-- User Info -->
+                            <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                <div id="menu-user-name" class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">User</div>
+                                <div id="menu-user-email" class="text-xs text-slate-500 dark:text-slate-400 truncate">user@example.com</div>
+                            </div>
+                            <!-- Boards Section -->
+                            <div class="py-1">
+                                <div class="px-4 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Boards</div>
+                                <div class="px-4">
+                                    <select id="board-switcher" class="w-full py-2 text-sm bg-slate-100 dark:bg-slate-700 border-transparent rounded-md outline-none focus:ring-1 focus:ring-primary-500">
+                                        <option value="" disabled>Select Board</option>
+                                    </select>
+                                </div>
+                                <button id="create-board-btn" class="w-full px-4 py-2 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    <span class="flex-1">Create New Board</span>
+                                </button>
+                            </div>
+                            <div class="border-t border-slate-200 dark:border-slate-700"></div>
+                            <!-- Current Board Section -->
+                            <div class="py-1">
+                                <div class="px-4 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Current Board</div>
+                                <button id="members-menu" class="w-full px-4 py-2 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20a3 3 0 00-3-3m-3-3V10a5 5 0 015-5h2v5a3 3 0 01-3 3m0 0a3 3 0 00-3 3m0 0v3m0 0h3m0 0H9m-1 3h1" />
+                                    </svg>
+                                    <span class="flex-1">Manage Members</span>
+                                </button>
+                                <button id="export-menu" class="w-full px-4 py-2 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span class="flex-1">Export Data</span>
+                                </button>
+                                <button id="import-menu" class="w-full px-4 py-2 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V7a3 3 0 013-3h10a3 3 0 013 3v1m-4 4l-4-4m0 0l-4 4m4-4v16" />
+                                    </svg>
+                                    <span class="flex-1">Import Data</span>
+                                </button>
+                                <button id="add-column-menu" class="w-full px-4 py-2 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    <span class="flex-1">Add Column</span>
+                                </button>
+                                <button id="archived-cards-menu" class="w-full px-4 py-2 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 11-4 0 2 2 0 014 0zM5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-10 0a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    <span class="flex-1">Archived Cards</span>
+                                </button>
+                            </div>
+                            <div class="border-t border-slate-200 dark:border-slate-700"></div>
+                            <!-- Preference Section -->
+                            <div class="py-1">
+                                <div class="px-4 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Preference</div>
+                                <button id="theme-toggle-menu" class="w-full px-4 py-2 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <svg id="theme-toggle-dark-icon" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                        </svg>
+                                        <svg id="theme-toggle-light-icon" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                        <span class="flex-1">Toggle Dark Mode</span>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="border-t border-slate-200 dark:border-slate-700"></div>
+                            <!-- General Section -->
+                            <div class="py-1">
+                                <button id="about-menu" class="w-full px-4 py-2 text-sm text-left hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span class="flex-1">About</span>
+                                </button>
+                            </div>
+                            <div class="border-t border-slate-200 dark:border-slate-700"></div>
+                            <!-- Footer Section -->
+                            <div class="py-1">
+                                <button id="logout-menu" class="w-full px-4 py-2 text-sm text-left hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center gap-3 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span class="flex-1">Logout</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+<input type="file" id="import-file" accept=".json" class="hidden">

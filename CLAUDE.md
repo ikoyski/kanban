@@ -3,15 +3,18 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Development Commands
-- **Run App**: Open `kanban.html` (the app) or `index.html` (landing page) directly in a modern web browser.
-- **Build/Test**: No build process or automated test suite is currently implemented.
+- **Run App**: Serve the repository over HTTP (for example, `python -m http.server 8000`) and open `http://localhost:8000/kanban.html`. The app loads HTML partials with `fetch()`, so do not open `kanban.html` using `file://`. The static landing/legal pages can still be opened directly, but using the local server is recommended.
+- **Build/Test**: No build process or automated test suite is currently implemented. The HTML partial loader has no framework or build-time dependency.
 
 ## Architecture and Structure
 The project is a vanilla JavaScript implementation of a Kanban board using ES6 modules.
 
 ### Core Components
 - `privacy.html`, `terms.html`: Static legal pages (contact email is set in each file; keep them in sync with what the app and backend actually collect).
-- `kanban.html`: The app's entry point and layout.
+- `kanban.html`: The app's entry-point shell. It contains component placeholders and the dynamic board container; keep it lightweight and preserve the existing URL.
+- `src/components/`: Static HTML partials loaded at runtime. `auth-view.html`, `app-header.html`, `profile-menu.html`, and `board-toolbar.html` compose the main app shell. `src/components/modals/` contains the create-card, card-detail, About, members, archived-card and confirmation modal markup.
+- `src/js/partial-loader.js`: Fetches and inserts `data-include` HTML partials, including nested placeholders.
+- `src/js/bootstrap.js`: Loads all partials before dynamically importing `app.js`. This order is required because `ui.js` queries DOM elements when the module is evaluated.
 - `index.html`: Static landing page (Tailwind + a small SortableJS sample board). It links to `kanban.html` and forwards old `?board=` deep links there.
 - `src/css/style.css`: Custom styles (complements Tailwind CSS).
 - `src/js/app.js`: Main application controller (`KanbanApp` class). Manages application state, event listeners, and coordinates between the API and UI.
@@ -29,7 +32,14 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - **Role-Based Access Control (RBAC)**: The app enforces roles (`OWNER`, `EDITOR`, `VIEWER`). Mutating actions and certain UI elements are gated based on the current board role.
 
 ### Auth screen
-- `kanban.html` has one card in `#app-auth-view` (`#signin-card`) with a "Continue with Google" button (`#google-signin-btn`) and a message area (`#auth-message`) for sign-in errors and session expiry. The page must be served at the redirect URI registered for the client (`redirectUri()` in `auth.js` resolves `kanban.html` relative to the current page; the auth server's `AUTH_WEB_REDIRECT_URIS` must list that exact URL).
+- `src/components/auth-view.html` supplies `#app-auth-view`, including `#signin-card`, the "Continue with Google" button (`#google-signin-btn`) and the `#auth-message` area for sign-in errors and session expiry. The component is loaded before `app.js`. The page must be served at the redirect URI registered for the client (`redirectUri()` in `auth.js` resolves `kanban.html` relative to the current page; the auth server's `AUTH_WEB_REDIRECT_URIS` must list that exact URL).
+
+### HTML partial loading rules
+- Keep the existing DOM IDs and expected element nesting stable unless updating all consumers intentionally. `ui.js` binds to these IDs during module evaluation.
+- `kanban.html` uses `data-include="src/components/…"` placeholders. Nested includes are supported; for example, `app-header.html` includes `profile-menu.html`.
+- Always load all partials through `src/js/bootstrap.js` before importing `src/js/app.js`. Do not point `kanban.html` directly at `app.js`, and do not move the app import ahead of `loadPartials()`.
+- Keep dynamic board columns and cards in `ui.js`; only static page markup belongs in HTML partials. The card-detail modal's content is generated dynamically by `UI.openCardDetail()`, while the outer `#card-detail-modal` and `#card-detail-body` shell live in `card-detail-modal.html`.
+- Partials are fetched from the same origin and must be deployed alongside `kanban.html` under the same `/kanban/` base path.
 
 - API validation errors are shaped `{ field: "message" }` with no `message` key; `ApiClient.request` joins those values into the thrown error message.
 

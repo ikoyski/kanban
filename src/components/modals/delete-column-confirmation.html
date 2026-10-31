@@ -1,0 +1,27 @@
+<div id="delete-column-modal" class="fixed inset-0 z-[80] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"></div>
+        <div class="relative bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-2xl transform transition-all scale-95 opacity-0 duration-200">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 id="delete-col-title" class="text-xl font-bold">Delete Column</h2>
+                    <button id="close-delete-col-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <p id="delete-col-message" class="text-slate-500 dark:text-slate-400 text-sm">Are you sure you want to delete this column?</p>
+                    <div id="delete-col-transfer-section" class="hidden space-y-2">
+                        <label class="block text-sm font-medium opacity-70">Transfer cards to:</label>
+                        <select id="delete-col-destination" class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 outline-none transition-all text-sm">
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-6">
+                    <button id="delete-col-cancel" class="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Cancel</button>
+                    <button id="delete-col-confirm" class="px-6 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-md transition-all active:scale-95">Delete Column</button>
+                </div>
+            </div>
+        </div>
+    </div>
