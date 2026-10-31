@@ -90,6 +90,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 
 ### Legal pages and privacy-sensitive changes
 - `index.html` is the public landing page; `terms.html` and `privacy.html` are user-facing legal disclosures. Update them when authentication, browser storage, third-party providers, AI/MCP capabilities, data retention or account deletion behavior changes.
+- **Public sign-in copy**: `index.html` should state that Google and GitHub are supported sign-in providers. Keep `terms.html` and `privacy.html` aligned with the providers actually enabled on the auth server.
 - Authentication uses configured federated providers through `https://auth.ikoyski.top` (currently Google and GitHub); the frontend does not collect provider passwords.
 - Keep the Privacy Policy's browser-storage details aligned with `src/js/auth.js`: `kanban-auth` in local storage contains the access token and expiry; `kanban-auth-pending` in session storage contains temporary PKCE verifier/state and return-search state during authorization.
 - The current account-deletion process is manual by email to `admin@ikoyski.top`. Do not document self-service deletion until it is implemented and deployed.
