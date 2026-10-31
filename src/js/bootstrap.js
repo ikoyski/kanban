@@ -4,7 +4,7 @@ import * as Auth from './auth.js';
 // Delegate the click from document so the handler remains reliable even though
 // the sign-in button itself is inserted asynchronously by the partial loader.
 document.addEventListener('click', async (event) => {
-    const button = event.target.closest?.('#google-signin-btn');
+    const button = event.target.closest?.('#signin-btn');
     if (!button) return;
 
     event.preventDefault();
@@ -31,7 +31,7 @@ async function bootstrap() {
         // ui.js queries the DOM as soon as it is imported, so every partial
         // must be present before app.js (and its UI imports) is evaluated.
         await loadPartials();
-        await import('./app.js?v=20261031-oauth-callback');
+        await import('./app.js?v=20261031-multi-provider-login');
     } catch (error) {
         console.error('Kanban failed to initialize:', error);
 

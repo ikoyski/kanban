@@ -1,5 +1,5 @@
 // Sign-in with the auth server: OAuth 2.0 authorization code flow with PKCE (RFC 7636).
-// People choose their Google account on the auth server; this page never sees a password.
+// People choose a configured identity provider on the auth server; this page never sees a provider password.
 //
 // The UI is a public client, and Spring Authorization Server does not issue refresh tokens to public
 // clients. So there is only an access token. When it expires the user signs in again, which is one
@@ -142,8 +142,8 @@ export function clearSession() {
     localStorage.removeItem('kanban-user');
 }
 
-// Sign out for real: forget the tokens here, then end the auth server's session so "Continue with Google"
-// does not sign the same person straight back in. The auth server returns the browser to this page.
+// Sign out for real: forget the tokens here and end the auth server's session so the next visit
+// requires a fresh provider selection. The auth server returns the browser to this page.
 export function logout() {
     clearSession();
     window.location.assign(`${AUTH_BASE_URL}/logout?redirect=${encodeURIComponent(redirectUri())}`);
