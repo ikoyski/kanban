@@ -40,7 +40,7 @@ export async function installCdnStubs(page) {
     await page.route('https://cdn.tailwindcss.com', route => route.fulfill({
         status: 200,
         contentType: 'application/javascript',
-        body: 'window.tailwind = window.tailwind || {};',
+        body: "window.tailwind = window.tailwind || {}; document.head.insertAdjacentHTML('beforeend', '<style>.hidden{display:none!important}.flex{display:flex}.inline-flex{display:inline-flex}</style>');",
     }));
 
     await page.route('https://cdn.jsdelivr.net/**', async route => {
@@ -181,7 +181,7 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
             await respond({
                 email: 'playwright@example.test',
                 displayName: 'Playwright User',
-                avatarUrl: '',
+                avatarUrl: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%2220%22 fill=%22%23ddd%22/%3E%3C/svg%3E',
             });
             return;
         }
@@ -191,14 +191,14 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
             return;
         }
 
-        const boardMatch = path.match(/^\\/v1\\/boards\\/([^/]+)$/);
+        const boardMatch = path.match(/^\/v1\/boards\/([^/]+)$/);
         if (method === 'GET' && boardMatch) {
             const board = boards[boardMatch[1]];
             await respond(board ? JSON.parse(JSON.stringify(board)) : { message: 'Board not found' }, board ? 200 : 404);
             return;
         }
 
-        if (method === 'GET' && /^\\/v1\\/comments\\/card\\//.test(path)) {
+        if (method === 'GET' && /^\/v1\/comments\/card\//.test(path)) {
             await respond([]);
             return;
         }
@@ -225,7 +225,7 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
             return;
         }
 
-        const moveMatch = path.match(/^\\/v1\\/cards\\/([^/]+)\\/move$/);
+        const moveMatch = path.match(/^\/v1\/cards\/([^/]+)\/move$/);
         if (method === 'PATCH' && moveMatch) {
             const body = request.postDataJSON();
             const cardId = moveMatch[1];
@@ -242,7 +242,7 @@ export async function mockKanbanApi(page, { seedToken = true } = {}) {
             return;
         }
 
-        const cardMatch = path.match(/^\\/v1\\/cards\\/([^/]+)$/);
+        const cardMatch = path.match(/^\/v1\/cards\/([^/]+)$/);
         if (cardMatch && method === 'PATCH') {
             const patch = request.postDataJSON();
             const cardId = cardMatch[1];
