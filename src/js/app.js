@@ -32,6 +32,26 @@ class KanbanApp {
             signInError = error.message;
         }
 
+        // A landing-page sign-in link can skip the app's intermediate auth screen.
+        // Consume the one-shot flag before starting OAuth so it is not restored after the callback.
+        const params = new URLSearchParams(window.location.search);
+        const directSignIn = params.get('signin') === '1';
+        if (params.has('signin')) {
+            params.delete('signin');
+            const query = params.toString();
+            history.replaceState(null, '', window.location.pathname + (query ? `?${query}` : '') + window.location.hash);
+        }
+
+        if (!this.checkAuth() && directSignIn && !signInError) {
+            try {
+                await Auth.startLogin();
+                return;
+            } catch (error) {
+                console.error('Could not start sign-in:', error);
+                signInError = error.message;
+            }
+        }
+
         if (this.checkAuth()) {
             try {
                 await this.loadProfile();
