@@ -111,8 +111,8 @@ This is a vanilla JavaScript project with ES6 modules and CDN-hosted dependencie
 
 <img width="978" height="567" alt="kanban-darkmode" src="https://github.com/user-attachments/assets/4133b1c9-ab2a-4c53-8409-cba356ff90a4" />
 <img width="980" height="567" alt="kanban-lightmode" src="https://github.com/user-attachments/assets/82134587-d91b-4054-82b9-b3da98e4d7bd" />
-<img width="2720" height="2016" alt="kanban_current_architecture_v2" src="https://github.com/user-attachments/assets/a03d096e-1edf-443d-ac43-cd6fde980d2d" />
-<img width="2720" height="1440" alt="kanban_platform_infrastructure_current" src="https://github.com/user-attachments/assets/1b6d0368-e801-4e8a-9fb9-ff8c2aecedfd" />
+<img width="2720" height="2400" alt="kanban_agent_access_live_v2" src="https://github.com/user-attachments/assets/20af91a8-e12a-446d-b1dd-b09cec71eeed" />
+<img width="2720" height="1440" alt="kanban_platform_infrastructure_v5" src="https://github.com/user-attachments/assets/f3f7b8dc-4318-4898-8de7-3a0f67fe38e9" />
 
 
 ## Authentication and API Architecture
