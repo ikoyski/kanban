@@ -91,7 +91,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
   - **Never** interpolate `card.description` or a comment's `content` into a template string
     unescaped — always go through `toDisplayHtml`/`toPlainText` first. This is the one field
     in the app that is genuinely attacker-controlled HTML (any board member can write it), so
-    treat new UI that touches it with the same care as the existing call sites in `ui.js`.
+    treat new UI that touches it with the same care as the existing call sites in `ui/board-cards.js` and `ui/card-detail.js`.
   - The card-detail modal's description field and the comment composer both use
     `UI.startRichEdit` / `createRichEditor` — editors are destroyed and recreated whenever the
     modal re-renders (e.g. after any inline edit), so don't hold a long-lived reference to a
