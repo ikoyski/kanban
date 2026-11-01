@@ -355,5 +355,5 @@ export const AppEvents = {
         };
     }
 
-    // The person chose to sign out: forget the tokens and end the auth server's session too.
+    // The person chose to sign out: forget the tokens and end the auth server's session too.,
 };
