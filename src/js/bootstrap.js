@@ -36,6 +36,9 @@ async function bootstrap() {
         // This keeps the existing UI API intact while escaping untrusted
         // plain-text values before ui.js interpolates them into innerHTML.
         await import('./ui-security.js');
+        // Keep failed inline edits open so their current contents can be retried
+        // instead of being discarded by the original ui.js failure path.
+        await import('./ui-edit-preservation.js');
         await import('./app.js?v=20261101-app-modules');
     } catch (error) {
         console.error('Kanban failed to initialize:', error);
