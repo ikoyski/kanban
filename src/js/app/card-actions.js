@@ -159,7 +159,7 @@ export const CardActions = {
 
     async handleOpenCardDetail(cardId) {
         this.showCardDetail(cardId);
-    }
+    },
 
     // Renders the card detail modal and wires up its comments. This runs on open AND after every
     // inline edit (which re-renders the whole modal), so the comment list and the comment editor
