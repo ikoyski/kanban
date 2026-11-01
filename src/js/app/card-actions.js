@@ -16,7 +16,7 @@ export const CardActions = {
                 UI.openConfirm(cardId);
             },
         };
-    }
+    },
 
     async handleDetailPriorityChange(newPriority, card) {
         if (newPriority === card.priority) return;
@@ -35,7 +35,7 @@ export const CardActions = {
             this.showCardDetail(card.id);
             alert('Failed to save: ' + error.message);
         }
-    }
+    },
 
     async handleFormSubmit() {
         if (this.currentRole === 'VIEWER') {
@@ -85,7 +85,7 @@ export const CardActions = {
             this.renderAndBind();
             alert('Failed to create card: ' + error.message);
         }
-    }
+    },
 
     async handleDetailEdit(el, card, field, multiline = false, type = 'text', rich = false) {
         const currentValue = card[field];
@@ -125,7 +125,7 @@ export const CardActions = {
             type: type,
             onSave,
         });
-    }
+    },
 
     async handleDelete() {
         if (this.currentRole === 'VIEWER') {
@@ -155,7 +155,7 @@ export const CardActions = {
             alert('Failed to delete card: ' + error.message);
         }
         this.pendingDeleteId = null;
-    }
+    },
 
     async handleOpenCardDetail(cardId) {
         this.showCardDetail(cardId);
@@ -163,7 +163,7 @@ export const CardActions = {
 
     // Renders the card detail modal and wires up its comments. This runs on open AND after every
     // inline edit (which re-renders the whole modal), so the comment list and the comment editor
-    // are always rebuilt together with the modal body.
+    // are always rebuilt together with the modal body.,
 
     showCardDetail(cardId) {
         const card = this.state.cards[cardId];
@@ -227,7 +227,7 @@ export const CardActions = {
                 }
             }
         };
-    }
+    },
 
     async refreshComments(cardId) {
         const commentsListEl = document.querySelector('.comments-list');
@@ -239,7 +239,7 @@ export const CardActions = {
                 commentsListEl.innerHTML = `<div class="text-center py-4 text-sm text-red-500">Failed to load comments: ${error.message}</div>`;
             }
         }
-    }
+    },
 
     async handleArchiveCard(cardId) {
         if (this.currentRole === 'VIEWER') {
@@ -255,13 +255,13 @@ export const CardActions = {
         } catch (error) {
             alert('Failed to archive card: ' + error.message);
         }
-    }
+    },
 
     async openArchivedCardsModal() {
         if (!this.currentBoardId) return;
         UI.openArchivedModal();
         await this.refreshArchivedCards();
-    }
+    },
 
     async refreshArchivedCards() {
         const listEl = document.getElementById('archived-cards-list');
@@ -273,7 +273,7 @@ export const CardActions = {
         } catch (error) {
             listEl.innerHTML = `<div class="col-span-full text-center py-12 text-red-500">Failed to load archived cards: ${error.message}</div>`;
         }
-    }
+    },
 
     async handleRestoreCard(cardId) {
         if (this.currentRole === 'VIEWER') {
@@ -288,5 +288,5 @@ export const CardActions = {
         } catch (error) {
             alert('Failed to restore card: ' + error.message);
         }
-    }
+    },
 };
