@@ -1,21 +1,16 @@
 import { loadPartials } from './partial-loader.js';
 import * as Auth from './auth.js';
 
-// Delegate the click from document so the handler remains reliable even though
-// the sign-in button itself is inserted asynchronously by the partial loader.
 document.addEventListener('click', async (event) => {
     const button = event.target.closest?.('#signin-btn');
     if (!button) return;
-
     event.preventDefault();
     const message = document.getElementById('auth-message');
     if (!message || button.disabled) return;
-
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
     message.textContent = 'Connecting to the sign-in service…';
     message.classList.remove('hidden');
-
     try {
         await Auth.startLogin();
     } catch (error) {
@@ -28,48 +23,39 @@ document.addEventListener('click', async (event) => {
 
 async function bootstrap() {
     try {
-        // ui.js queries the DOM as soon as it is imported, so every partial
-        // must be present before app.js (and its UI imports) is evaluated.
         await loadPartials();
 
-        // Install the UI security boundary before app.js starts rendering.
-        await import('./ui-security.js');
-        // Keep failed inline edits open so their current contents can be retried.
-        await import('./ui-edit-preservation.js');
-        // Clean up the previous card-detail Quill instance before DOM replacement.
-        await import('./ui-editor-lifecycle.js');
-        // Board rendering is the first ui.js responsibility extracted into a
-        // focused module. It extends the existing UI facade for compatibility.
+        // Install extracted implementations before the security decorators.
+        // This ordering ensures the decorators wrap the active UI methods.
         await import('./ui/board-view.js');
+        await import('./ui/modals.js');
+        await import('./ui/members.js');
+
+        await import('./ui-security.js');
+        await import('./ui-edit-preservation.js');
+        await import('./ui-editor-lifecycle.js');
         await import('./app.js?v=20261101-app-modules');
     } catch (error) {
         console.error('Kanban failed to initialize:', error);
-
         const message = document.createElement('div');
         message.className = 'min-h-screen flex items-center justify-center p-6 bg-slate-50 text-slate-800';
         message.setAttribute('role', 'alert');
-
         const content = document.createElement('div');
         content.className = 'max-w-md rounded-xl border border-red-200 bg-white p-6 shadow-lg';
-
         const title = document.createElement('h1');
         title.className = 'text-lg font-bold';
         title.textContent = 'Kanban could not finish loading';
-
         const description = document.createElement('p');
         description.className = 'mt-2 text-sm text-slate-600';
         description.textContent = 'A page component could not be loaded. Check your connection and refresh the page. If the problem continues, contact the application administrator.';
-
         const refresh = document.createElement('button');
         refresh.type = 'button';
         refresh.className = 'mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700';
         refresh.textContent = 'Refresh page';
         refresh.addEventListener('click', () => window.location.reload());
-
         content.append(title, description, refresh);
         message.append(content);
         document.body.replaceChildren(message);
     }
 }
-
 bootstrap();
