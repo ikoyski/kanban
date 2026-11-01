@@ -8,11 +8,8 @@
     <meta name="description" content="Sign in to your Kanban boards.">
     <meta name="robots" content="noindex, follow">
     <link rel="canonical" href="https://pages.ikoyski.top/kanban/kanban.html">
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SortableJS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <!-- Quill (WYSIWYG editor) + DOMPurify (HTML sanitizer) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
@@ -20,59 +17,28 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                            950: '#172554',
-                        }
-                    }
-                }
-            }
+            theme: { extend: { colors: { primary: {
+                50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                800: '#1e40af', 900: '#1e3a8a', 950: '#172554'
+            } } } }
         }
     </script>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
-
-    <!-- App Auth Views Wrapper -->
     <div data-include="src/components/auth-view.html"></div>
-
-    <!-- Board View Wrapper -->
     <div id="app-board-view" class="hidden flex flex-col min-h-screen">
-        <!-- Header -->
         <div data-include="src/components/app-header.html"></div>
         <div data-include="src/components/board-toolbar.html"></div>
-        <main id="board-container" class="flex-1 overflow-x-auto pt-3 pr-6 pb-6 pl-6 flex gap-6 items-start">
-            <!-- Columns will be injected here by JS -->
-        </main>
+        <main id="board-container" class="flex-1 overflow-x-auto pt-3 pr-6 pb-6 pl-6 flex gap-6 items-start"></main>
     </div>
-
-    <!-- Card Modal -->
     <div data-include="src/components/modals/create-card-modal.html"></div>
-    <!-- Card Detail Modal -->
     <div data-include="src/components/modals/card-detail-modal.html"></div>
-    <!-- Delete Card Confirmation Modal -->
     <div data-include="src/components/modals/delete-card-confirmation.html"></div>
-    <!-- About Modal -->
     <div data-include="src/components/modals/about-modal.html"></div>
-    <!-- Delete Column Modal -->
     <div data-include="src/components/modals/delete-column-confirmation.html"></div>
-    <!-- Members Modal -->
     <div data-include="src/components/modals/members-modal.html"></div>
-    <!-- Archived Cards Modal -->
     <div data-include="src/components/modals/archived-cards-modal.html"></div>
-
-    <!-- JS Modules -->
-    <script type="module" src="src/js/bootstrap.js?v=20261101-ui-board-view"></script>
+    <script type="module" src="src/js/bootstrap.js?v=20261101-ui-modules"></script>
 </body>
 </html>
