@@ -1,9 +1,10 @@
 /**
- * Stable UI facade shared by the application modules.
+ * Shared UI facade and cross-module editor state.
  *
- * DOM references are attached by ui/dom.js after HTML partials are loaded.
- * Feature implementations are attached by focused modules under ui/.
- * Keep only cross-module editor state here; avoid duplicating implementations.
+ * DOM references are registered after partial loading by ui/dom.js.
+ * UI operations are installed by focused feature modules under ui/.
+ * Keep this module free of rendering logic so callers retain one stable API
+ * without duplicate legacy implementations.
  */
 export const UI = {
     descriptionEditor: null,
