@@ -17,7 +17,11 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - `src/js/bootstrap.js`: Loads all partials before dynamically importing `app.js`. This order is required because `ui.js` queries DOM elements when the module is evaluated.
 - `index.html`: Static landing page (Tailwind + a small SortableJS sample board). It links to `kanban.html` and forwards old `?board=` deep links there.
 - `src/css/style.css`: Custom styles (complements Tailwind CSS).
-- `src/js/app.js`: Main application controller (`KanbanApp` class). Manages application state, event listeners, and coordinates between the API and UI.
+- `src/js/app.js`: Main application controller (`KanbanApp` class). Owns startup, authentication lifecycle, active-board selection and board loading.
+- `src/js/app/events.js`: Installs DOM and custom-event listeners. Methods are mixed into `KanbanApp.prototype` so existing handler `this` references remain valid.
+- `src/js/app/board-interactions.js`: Board rendering, SortableJS setup, column/card reordering and card filtering.
+- `src/js/app/card-actions.js`: Card creation, detail-modal editing, comments, deletion and archive/restore workflows.
+- `src/js/app/data-transfer.js`: Board JSON import/export workflows.
 - `src/js/api.js`: Data persistence layer (`ApiClient` class). Handles communication with the REST API backend; every request carries the access token from `auth.js`.
 - `src/js/auth.js`: Sign-in with the auth server: OAuth 2.0 authorization code flow with PKCE, token storage, sign-out. No UI code in it.
 - `src/js/ui.js`: UI rendering and DOM manipulation layer (`UI` object). Handles board rendering, modal controls, and theme switching.
@@ -28,6 +32,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - The app supports multi-board functionality; `currentBoardId` and `currentRole` are tracked to manage access and persistence.
 - State includes `columns` (mapping column IDs to lists of card IDs), `cards` (mapping card IDs to card data), and `settings` (e.g., theme).
 - State changes are persisted via `ApiClient` to a REST API backend, using optimistic updates for a snappy UI.
+- Feature methods are exported as plain-object mixins and attached to `KanbanApp.prototype` in `app.js`; preserve their `this` semantics when moving methods between modules. Keep the controller's startup and board lifecycle in `app.js`.
 - **Authentication**: People sign in with Google or GitHub on the auth server (`https://auth.ikoyski.top`); this app never handles a password. `auth.js` runs the authorization code flow with PKCE as the public client `kanban-web` and keeps the access token in `localStorage` (`kanban-auth`). The profile (name, avatar) comes from `GET /v1/users/me`, not from the token. Spring Authorization Server issues no refresh tokens to public clients, so the token is a single longer-lived access token (default 8 hours); when it expires or the API answers 401, `handleSessionExpired()` clears it and shows the sign-in screen, and signing in again is one click.
 - **Member avatars**: `GET /v1/boards/{boardId}/members` supplies each member's `avatarUrl`; the members modal should prefer that profile image and use the generated avatar only as a fallback.
 - **Role-Based Access Control (RBAC)**: The app enforces roles (`OWNER`, `EDITOR`, `VIEWER`). Mutating actions and certain UI elements are gated based on the current board role.
