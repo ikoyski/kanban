@@ -7,7 +7,7 @@ export const BoardInteractions = {
     renderAndBind() {
         UI.renderBoard(this.state, this.currentRole);
         this.initSortables();
-    }
+    },
 
     initSortables() {
         if (this.currentRole === 'VIEWER') return;
@@ -48,7 +48,7 @@ export const BoardInteractions = {
                 }
             });
         });
-    }
+    },
 
     async handleColumnSortEnd(evt) {
         if (this.currentRole === 'VIEWER') {
@@ -76,7 +76,7 @@ export const BoardInteractions = {
             this.renderAndBind();
             alert('Failed to reorder columns: ' + error.message);
         }
-    }
+    },
 
     async handleSortEnd(evt) {
         if (this.currentRole === 'VIEWER') {
@@ -103,7 +103,7 @@ export const BoardInteractions = {
         }
     }
 
-    // Create a new card (existing cards are edited inline in the detail modal)
+    // Create a new card (existing cards are edited inline in the detail modal),
 
     filterCards(term) {
         const cards = document.querySelectorAll('.card');
@@ -116,5 +116,5 @@ export const BoardInteractions = {
 
             cardEl.classList.toggle('hidden', !matches);
         });
-    }
+    },
 };
