@@ -17,6 +17,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - `src/js/bootstrap.js`: Loads all partials, then initializes the DOM map and focused UI modules, then installs security/editor-lifecycle decorators, and only then imports `app.js`.
 - `src/js/ui.js`: Stable UI facade with only shared editor state (`descriptionEditor`, `commentEditor`). It should not contain rendering methods or capture DOM elements.
 - `src/js/ui/dom.js`: Captures shared DOM references after partials have loaded and attaches them to the `UI` facade.
+- Import the shared facade using the canonical relative path (`./ui.js` or `../ui.js`) without a query-string cache suffix. Different query strings create separate ES-module instances and therefore separate `UI` objects. Cache-bust the `kanban.html` bootstrap entry instead.
 - `index.html`: Static landing page (Tailwind + a small SortableJS sample board). It links to `kanban.html` and forwards old `?board=` deep links there.
 - `src/css/style.css`: Custom styles (complements Tailwind CSS).
 - `src/js/app.js`: Main application controller (`KanbanApp` class). Owns startup, authentication lifecycle, active-board selection and board loading.
