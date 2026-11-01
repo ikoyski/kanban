@@ -16,7 +16,7 @@ export const DataTransfer = {
         } catch (error) {
             alert('Failed to export data: ' + error.message);
         }
-    }
+    },
 
     async importData(boardId, file) {
         try {
@@ -45,5 +45,5 @@ export const DataTransfer = {
             console.error('Import error:', e);
             alert('Failed to import data: ' + e.message);
         }
-    }
+    },
 };
