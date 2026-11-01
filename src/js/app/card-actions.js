@@ -1,7 +1,7 @@
 import ApiClient from '../api.js';
 import { UI } from '../ui.js?v=20261101-members-avatar-fix';
 
-// Card creation, inline detail editing, comments and archive workflows.
+// Card creation, detail editing, comments and archive workflows.
 export const CardActions = {
     cardDetailCallbacks() {
         return {
