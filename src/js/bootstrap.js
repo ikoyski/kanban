@@ -31,7 +31,7 @@ async function bootstrap() {
         // ui.js queries the DOM as soon as it is imported, so every partial
         // must be present before app.js (and its UI imports) is evaluated.
         await loadPartials();
-        await import('./app.js?v=20261101-direct-signin');
+        await import('./app.js?v=20261101-app-modules');
     } catch (error) {
         console.error('Kanban failed to initialize:', error);
 
