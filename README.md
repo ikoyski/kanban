@@ -58,7 +58,20 @@ A modern, responsive Kanban board implementation featuring drag-and-drop functio
         │   └── data-transfer.js # Board JSON import/export
         ├── api.js            # REST API client for data persistence (ApiClient class)
         ├── auth.js           # OAuth 2.0 code flow with PKCE and token handling
-        ├── ui.js             # UI rendering and DOM manipulation (UI object)
+        ├── ui.js             # Stable UI facade and shared editor state
+        ├── ui/               # Focused UI implementation modules
+        │   ├── dom.js        # DOM references captured after partial loading
+        │   ├── board-view.js # Board-level rendering and empty-state controls
+        │   ├── board-cards.js # Column and card HTML rendering
+        │   ├── app-state.js  # Theme and card-count UI helpers
+        │   ├── modals.js     # Create-card, confirmation, About and archive modal lifecycle
+        │   ├── members.js    # Profile header and board-member rendering
+        │   ├── content-renderers.js # Board switcher, comments and archived-card rendering
+        │   ├── inline-edit.js # Plain-text and rich-text inline editors
+        │   └── card-detail.js # Card detail modal and comment composer
+        ├── ui-security.js    # Plain-text escaping decorators for UI renderers
+        ├── ui-edit-preservation.js # Retry-safe inline-edit behavior
+        ├── ui-editor-lifecycle.js # Quill lifecycle cleanup for card details
         └── editor.js         # Quill wrapper and rich-text sanitizing/rendering helpers
 ```
 
