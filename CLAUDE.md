@@ -14,7 +14,10 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - `kanban.html`: The app's entry-point shell. It contains component placeholders and the dynamic board container; keep it lightweight and preserve the existing URL.
 - `src/components/`: Static HTML partials loaded at runtime. `auth-view.html`, `app-header.html`, `profile-menu.html`, and `board-toolbar.html` compose the main app shell. `src/components/modals/` contains the create-card, card-detail, About, members, archived-card and confirmation modal markup.
 - `src/js/partial-loader.js`: Fetches and inserts `data-include` HTML partials, including nested placeholders.
-- `src/js/bootstrap.js`: Loads all partials before dynamically importing `app.js`. This order is required because `ui.js` queries DOM elements when the module is evaluated.
+- `src/js/bootstrap.js`: Loads all partials, then initializes the DOM map and focused UI modules, then installs security/editor-lifecycle decorators, and only then imports `app.js`.
+- `src/js/ui.js`: Stable UI facade with only shared editor state (`descriptionEditor`, `commentEditor`). It should not contain rendering methods or capture DOM elements.
+- `src/js/ui/dom.js`: Captures shared DOM references after partials have loaded and attaches them to the `UI` facade.
+- Import the shared facade using the canonical relative path (`./ui.js` or `../ui.js`) without a query-string cache suffix. Different query strings create separate ES-module instances and therefore separate `UI` objects. Cache-bust the `kanban.html` bootstrap entry instead.
 - `index.html`: Static landing page (Tailwind + a small SortableJS sample board). It links to `kanban.html` and forwards old `?board=` deep links there.
 - `src/css/style.css`: Custom styles (complements Tailwind CSS).
 - `src/js/app.js`: Main application controller (`KanbanApp` class). Owns startup, authentication lifecycle, active-board selection and board loading.
@@ -24,7 +27,17 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - `src/js/app/data-transfer.js`: Board JSON import/export workflows.
 - `src/js/api.js`: Data persistence layer (`ApiClient` class). Handles communication with the REST API backend; every request carries the access token from `auth.js`.
 - `src/js/auth.js`: Sign-in with the auth server: OAuth 2.0 authorization code flow with PKCE, token storage, sign-out. No UI code in it.
-- `src/js/ui.js`: UI rendering and DOM manipulation layer (`UI` object). Handles board rendering, modal controls, and theme switching.
+- `src/js/ui/board-view.js`: Board-level rendering, board controls and empty-board state.
+- `src/js/ui/board-cards.js`: Column and card markup/rendering; receives already-escaped plain-text values through the `ui-security.js` decorator.
+- `src/js/ui/app-state.js`: Theme switching and card-count UI updates.
+- `src/js/ui/modals.js`: Add-card, confirmation, About, delete-column and archive modal lifecycle.
+- `src/js/ui/members.js`: Profile header and member-list UI.
+- `src/js/ui/content-renderers.js`: Board switcher, comments and archived-card rendering.
+- `src/js/ui/inline-edit.js`: Plain-text and rich-text inline editing implementations.
+- `src/js/ui/card-detail.js`: Card detail modal rendering, edit/archive/delete callbacks and comment composer.
+- `src/js/ui-security.js`: Decorates the active UI renderers to escape untrusted plain-text fields while retaining the editor.js sanitizer for rich text.
+- `src/js/ui-edit-preservation.js`: Wraps inline editors so failed saves retain their contents and allow retry/cancel.
+- `src/js/ui-editor-lifecycle.js`: Destroys the active comment editor before detail modal replacement or close.
 - `src/js/editor.js`: WYSIWYG rich-text support. Wraps Quill (`createRichEditor`) and provides the sanitize/normalize/plain-text helpers (`sanitizeHtml`, `toDisplayHtml`, `toPlainText`, `normalizeEditorHtml`) used anywhere card `description` or comment `content` is read, written, or displayed.
 
 ### State Management
@@ -41,19 +54,19 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - `src/components/auth-view.html` supplies `#app-auth-view`, including `#signin-card`, the provider-neutral "Continue to sign in" button (`#signin-btn`) and the `#auth-message` area for sign-in errors and session expiry. The component is loaded before `app.js`. The page must be served at the redirect URI registered for the client (`redirectUri()` in `auth.js` resolves `kanban.html` relative to the current page; the auth server's `AUTH_WEB_REDIRECT_URIS` must list that exact URL).
 
 ### HTML partial loading rules
-- Keep the existing DOM IDs and expected element nesting stable unless updating all consumers intentionally. `ui.js` binds to these IDs during module evaluation.
+- Keep the existing DOM IDs and expected element nesting stable unless updating all consumers intentionally. `ui/dom.js` captures these IDs after the partials have loaded and before the feature modules are installed.
 - `kanban.html` uses `data-include="src/components/…"` placeholders. Nested includes are supported; for example, `app-header.html` includes `profile-menu.html`.
 - Always load all partials through `src/js/bootstrap.js` before importing `src/js/app.js`. Do not point `kanban.html` directly at `app.js`, and do not move the app import ahead of `loadPartials()`.
-- Keep dynamic board columns and cards in `ui.js`; only static page markup belongs in HTML partials. The card-detail modal's content is generated dynamically by `UI.openCardDetail()`, while the outer `#card-detail-modal` and `#card-detail-body` shell live in `card-detail-modal.html`.
+- Keep dynamic board, column, card, member, and card-detail content in the focused `src/js/ui/` modules; only static page markup belongs in HTML partials. The card-detail modal content is generated by `UI.openCardDetail()` in `ui/card-detail.js`, while the outer `#card-detail-modal` and `#card-detail-body` shell live in `card-detail-modal.html`.
 - Partials are fetched from the same origin and must be deployed alongside `kanban.html` under the same `/kanban/` base path.
 
 - API validation errors are shaped `{ field: "message" }` with no `message` key; `ApiClient.request` joins those values into the thrown error message.
 
 ### UI Interaction Patterns
-- **DOM Access**: The `UI` object centralizes access to common DOM elements.
+- **DOM Access**: `ui/dom.js` centralizes common DOM references and attaches them to the `UI` facade only after all HTML partials have loaded.
 - **Communication**: The project uses an event-driven approach for UI-to-App communication. The `UI` layer often dispatches `CustomEvent` objects on the `window` object to signal actions that require state changes.
     - Example events: `open-card-modal`, `rename-column`, `delete-column`, `auth-expired`.
-- **Rendering**: The board is re-rendered entirely via `UI.renderBoard(state)` whenever a significant state change occurs, followed by a re-initialization of SortableJS.
+- **Rendering**: The board is re-rendered via `UI.renderBoard(state)` in `ui/board-view.js` whenever a significant state change occurs, followed by a re-initialization of SortableJS. UI modules install their implementation methods on the shared `UI` facade with `Object.assign`; preserve the existing method names and `this` semantics when moving code.
 
 ### Key Dependencies
 - **Tailwind CSS**: Used for responsive styling.
@@ -78,7 +91,7 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
   - **Never** interpolate `card.description` or a comment's `content` into a template string
     unescaped — always go through `toDisplayHtml`/`toPlainText` first. This is the one field
     in the app that is genuinely attacker-controlled HTML (any board member can write it), so
-    treat new UI that touches it with the same care as the existing call sites in `ui.js`.
+    treat new UI that touches it with the same care as the existing call sites in `ui/board-cards.js` and `ui/card-detail.js`.
   - The card-detail modal's description field and the comment composer both use
     `UI.startRichEdit` / `createRichEditor` — editors are destroyed and recreated whenever the
     modal re-renders (e.g. after any inline edit), so don't hold a long-lived reference to a

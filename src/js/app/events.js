@@ -1,5 +1,5 @@
 import ApiClient from '../api.js';
-import { UI } from '../ui.js?v=20261101-members-avatar-fix';
+import { UI } from '../ui.js';
 
 // DOM event wiring, separated from the application lifecycle.
 export const AppEvents = {

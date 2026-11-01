@@ -25,11 +25,19 @@ async function bootstrap() {
     try {
         await loadPartials();
 
-        // Install extracted implementations before the security decorators.
-        // This ordering ensures the decorators wrap the active UI methods.
+        // Refresh shared DOM references after all partials have loaded.
+        await import('./ui/dom.js');
+
+        // Install all extracted implementations before the security and lifecycle decorators.
+        // This ordering ensures decorators wrap the active UI methods.
         await import('./ui/board-view.js');
+        await import('./ui/board-cards.js');
+        await import('./ui/app-state.js');
         await import('./ui/modals.js');
         await import('./ui/members.js');
+        await import('./ui/content-renderers.js');
+        await import('./ui/inline-edit.js');
+        await import('./ui/card-detail.js');
 
         await import('./ui-security.js');
         await import('./ui-edit-preservation.js');

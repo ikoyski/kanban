@@ -1,5 +1,5 @@
 import ApiClient from '../api.js';
-import { UI } from '../ui.js?v=20261101-members-avatar-fix';
+import { UI } from '../ui.js';
 import { toPlainText } from '../editor.js';
 
 // Board rendering, sorting and client-side filtering.
