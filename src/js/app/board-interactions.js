@@ -101,9 +101,7 @@ export const BoardInteractions = {
             this.renderAndBind();
             alert('Failed to delete card: ' + error.message);
         }
-    }
-
-    // Create a new card (existing cards are edited inline in the detail modal),
+    },
 
     filterCards(term) {
         const cards = document.querySelectorAll('.card');
