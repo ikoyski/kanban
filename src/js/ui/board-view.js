@@ -65,8 +65,8 @@ export function renderEmptyState() {
     };
 }
 
-// Install after ui-security.js so the facade continues to use the safe board
-// renderer while preserving the long-standing UI method names.
+// Install before ui-security.js; the security module wraps these active
+// implementations while preserving the long-standing UI method names.
 Object.assign(UI, {
     renderBoard,
     setBoardControlsVisible,
