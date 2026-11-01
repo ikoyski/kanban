@@ -1,9 +1,6 @@
 import ApiClient from './api.js';
 import * as Auth from './auth.js';
 import { UI } from './ui.js?v=20261101-members-avatar-fix';
-import { UI } from './ui.js?v=20261101-members-avatar-fix';
-import * as Auth from './auth.js';
-import ApiClient from './api.js';
 import { AppEvents } from './app/events.js';
 import { BoardInteractions } from './app/board-interactions.js';
 import { CardActions } from './app/card-actions.js';
