@@ -39,6 +39,9 @@ async function bootstrap() {
         // Keep failed inline edits open so their current contents can be retried
         // instead of being discarded by the original ui.js failure path.
         await import('./ui-edit-preservation.js');
+        // Clean up the previous card-detail Quill instance before the modal DOM
+        // is replaced or the detail modal is closed.
+        await import('./ui-editor-lifecycle.js');
         await import('./app.js?v=20261101-app-modules');
     } catch (error) {
         console.error('Kanban failed to initialize:', error);
