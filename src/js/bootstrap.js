@@ -31,6 +31,7 @@ async function bootstrap() {
         await import('./ui/modals.js');
         await import('./ui/members.js');
         await import('./ui/content-renderers.js');
+        await import('./ui/inline-edit.js');
 
         await import('./ui-security.js');
         await import('./ui-edit-preservation.js');
