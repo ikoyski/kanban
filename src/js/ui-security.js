@@ -3,10 +3,10 @@
  *
  * Rich text continues to use the DOMPurify-backed helpers in editor.js
  * (toDisplayHtml / normalizeEditorHtml). Plain-text values that are later
- * interpolated into UI templates are HTML-escaped before ui.js receives them.
+ * interpolated into UI templates are HTML-escaped by the UI security decorators before the active renderer interpolates them.
  *
  * This module intentionally keeps the existing UI API and rendering structure
- * unchanged while the larger ui.js split remains a separate concern.
+ * independent of where each UI implementation lives.
  */
 
 import { UI } from './ui.js';
