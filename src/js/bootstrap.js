@@ -31,6 +31,11 @@ async function bootstrap() {
         // ui.js queries the DOM as soon as it is imported, so every partial
         // must be present before app.js (and its UI imports) is evaluated.
         await loadPartials();
+
+        // Install the UI security boundary before app.js starts rendering.
+        // This keeps the existing UI API intact while escaping untrusted
+        // plain-text values before ui.js interpolates them into innerHTML.
+        await import('./ui-security.js');
         await import('./app.js?v=20261101-app-modules');
     } catch (error) {
         console.error('Kanban failed to initialize:', error);
