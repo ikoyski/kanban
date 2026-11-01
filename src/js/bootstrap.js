@@ -33,15 +33,14 @@ async function bootstrap() {
         await loadPartials();
 
         // Install the UI security boundary before app.js starts rendering.
-        // This keeps the existing UI API intact while escaping untrusted
-        // plain-text values before ui.js interpolates them into innerHTML.
         await import('./ui-security.js');
-        // Keep failed inline edits open so their current contents can be retried
-        // instead of being discarded by the original ui.js failure path.
+        // Keep failed inline edits open so their current contents can be retried.
         await import('./ui-edit-preservation.js');
-        // Clean up the previous card-detail Quill instance before the modal DOM
-        // is replaced or the detail modal is closed.
+        // Clean up the previous card-detail Quill instance before DOM replacement.
         await import('./ui-editor-lifecycle.js');
+        // Board rendering is the first ui.js responsibility extracted into a
+        // focused module. It extends the existing UI facade for compatibility.
+        await import('./ui/board-view.js');
         await import('./app.js?v=20261101-app-modules');
     } catch (error) {
         console.error('Kanban failed to initialize:', error);
