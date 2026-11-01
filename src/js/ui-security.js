@@ -72,8 +72,23 @@ UI.renderBoardSwitcher = function (boards, currentBoardId) {
 };
 
 const originalOpenCardDetail = UI.openCardDetail;
-UI.openCardDetail = function (card, role, callbacks) {
-    return originalOpenCardDetail.call(this, safeCardForTemplate(card), role, callbacks);
+UI.openCardDetail = function (card, role, callbacks = {}) {
+    const safeCard = safeCardForTemplate(card);
+    const safeCallbacks = { ...callbacks };
+
+    // ui.js receives the escaped card for rendering, but edit/save handlers
+    // must continue receiving the original card object so user-entered values
+    // are never persisted in their HTML-escaped form.
+    ['onEditTitle', 'onEditDescription', 'onEditLabels', 'onEditDate', 'onEditPriority']
+        .forEach((name) => {
+            if (typeof callbacks?.[name] !== 'function') return;
+            safeCallbacks[name] = (...args) => {
+                if (args.length > 1) args[1] = card;
+                return callbacks[name](...args);
+            };
+        });
+
+    return originalOpenCardDetail.call(this, safeCard, role, safeCallbacks);
 };
 
 const originalRenderComments = UI.renderComments;
