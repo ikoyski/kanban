@@ -50,7 +50,12 @@ A modern, responsive Kanban board implementation featuring drag-and-drop functio
     └── js/
         ├── bootstrap.js      # Loads partials before app.js
         ├── partial-loader.js # Fetches and inserts static HTML partials
-        ├── app.js            # Main application controller (KanbanApp class)
+        ├── app.js            # Small application controller and startup lifecycle
+        ├── app/              # Extracted application feature modules
+        │   ├── events.js     # DOM event wiring and UI interaction handlers
+        │   ├── board-interactions.js # Board rendering, sorting and filtering
+        │   ├── card-actions.js # Card CRUD, detail editing, comments and archive flows
+        │   └── data-transfer.js # Board JSON import/export
         ├── api.js            # REST API client for data persistence (ApiClient class)
         ├── auth.js           # OAuth 2.0 code flow with PKCE and token handling
         ├── ui.js             # UI rendering and DOM manipulation (UI object)
