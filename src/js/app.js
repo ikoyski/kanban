@@ -1,7 +1,9 @@
 import ApiClient from './api.js';
 import * as Auth from './auth.js';
 import { UI } from './ui.js?v=20261101-members-avatar-fix';
-import { toPlainText } from './editor.js';
+import { UI } from './ui.js?v=20261101-members-avatar-fix';
+import * as Auth from './auth.js';
+import ApiClient from './api.js';
 import { AppEvents } from './app/events.js';
 import { BoardInteractions } from './app/board-interactions.js';
 import { CardActions } from './app/card-actions.js';
@@ -238,3 +240,21 @@ class KanbanApp {
     // Single entry point for re-rendering the board. renderBoard() rebuilds every column/card
     // element, which drops the SortableJS bindings, so they must be re-attached each time.
     // Always use this instead of calling UI.renderBoard() directly.
+}
+
+// Keep the controller focused on startup, identity and board lifecycle.
+// Feature methods are mixed into the same prototype to preserve existing `this` behavior.
+Object.assign(KanbanApp.prototype, AppEvents, BoardInteractions, CardActions, DataTransfer);
+
+async function initializeKanbanApp() {
+    const app = new KanbanApp();
+    await app.start();
+}
+
+// bootstrap.js loads HTML partials before importing this module. That fetch can
+// finish after DOMContentLoaded has already fired, so support both startup states.
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeKanbanApp, { once: true });
+} else {
+    initializeKanbanApp();
+}
