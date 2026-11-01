@@ -1,7 +1,7 @@
 import ApiClient from '../api.js';
 import { UI } from '../ui.js?v=20261101-members-avatar-fix';
 
-// DOM event wiring is kept separate from the application lifecycle.
+// DOM event wiring, separated from the application lifecycle.
 export const AppEvents = {
     setupEventListeners() {
         // Board Switcher
