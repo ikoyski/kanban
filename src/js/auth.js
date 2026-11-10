@@ -5,7 +5,7 @@
 // clients. So there is only an access token. When it expires the user signs in again, which is one
 // click (and instant while the auth server's own session is still valid).
 
-const AUTH_BASE_URL = 'https://auth.ikoyski.top';
+const AUTH_BASE_URL = 'https://webtools-test-auth.onrender.com';
 const CLIENT_ID = 'kanban-web';
 const SCOPE = 'kanban.read kanban.write';
 
