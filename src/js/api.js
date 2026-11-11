@@ -1,6 +1,6 @@
 import { getAccessToken } from './auth.js';
 
-const BASE_URL = 'https://webtools-test-kanban-backend.onrender.com/kanban-backend';
+const BASE_URL = 'https://webtools-test-api-gateway.onrender.com/kanban-backend';
 
 class ApiClient {
   static async request(endpoint, options = {}) {
