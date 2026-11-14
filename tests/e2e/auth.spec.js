@@ -15,6 +15,7 @@ test('loads the sign-in view and starts OAuth with PKCE', async ({ page }) => {
     });
 
     await page.goto('/kanban.html');
+    await expect(page.locator('#app-loading-view')).toBeHidden();
     await expect(page.locator('#app-auth-view')).toBeVisible();
     await expect(page.getByRole('button', { name: /continue to sign in/i })).toBeVisible();
 
@@ -43,8 +44,13 @@ test('exchanges an OAuth callback code and opens the authenticated board', async
     }, { state: expectedState, verifier: expectedVerifier });
 
     let tokenRequest;
+    let releaseTokenResponse;
+    const tokenResponseGate = new Promise(resolve => {
+        releaseTokenResponse = resolve;
+    });
     await page.route('https://auth.ikoyski.top/oauth2/token', async route => {
         tokenRequest = new URLSearchParams(route.request().postData() || '');
+        await tokenResponseGate;
         await route.fulfill({
             status: 200,
             headers: { 'access-control-allow-origin': 'http://127.0.0.1:4173' },
@@ -59,7 +65,13 @@ test('exchanges an OAuth callback code and opens the authenticated board', async
 
     await page.goto(`/kanban.html?code=mock-authorization-code&state=${expectedState}`);
 
+    await expect(page.locator('#app-loading-view')).toBeVisible();
+    await expect.poll(() => tokenRequest !== undefined).toBeTruthy();
+    await expect(page.locator('#app-loading-message')).toContainText('Completing your sign-in');
+    releaseTokenResponse();
+
     await expect(page.locator('#app-board-view')).toBeVisible();
+    await expect(page.locator('#app-loading-view')).toBeHidden();
     await expect(page.locator('#board-name')).toContainText('Demo Board');
     await expect.poll(() => tokenRequest?.get('code')).toBe('mock-authorization-code');
     expect(tokenRequest.get('code_verifier')).toBe(expectedVerifier);
@@ -82,6 +94,7 @@ test('keeps the sign-in view usable when the auth redirect returns an OAuth erro
 
     await page.goto('/kanban.html?error=access_denied&error_description=Consent+was+denied&state=known-state');
 
+    await expect(page.locator('#app-loading-view')).toBeHidden();
     await expect(page.locator('#app-auth-view')).toBeVisible();
     await expect(page.locator('#auth-message')).toContainText('Consent was denied');
 });
