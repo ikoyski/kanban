@@ -1,5 +1,15 @@
-import { loadPartials } from './partial-loader.js';
+import { loadPartials } from './partial-loader.js?v=20261114-startup-optimization';
 import * as Auth from './auth.js';
+
+function markStartup(stage) {
+    if (!window.performance?.mark) return;
+    const name = `kanban:${stage}`;
+    if (performance.getEntriesByName(name, 'mark').length === 0) {
+        performance.mark(name);
+    }
+}
+
+markStartup('bootstrap-start');
 
 document.addEventListener('click', async (event) => {
     const button = event.target.closest?.('#signin-btn');
@@ -24,25 +34,32 @@ document.addEventListener('click', async (event) => {
 async function bootstrap() {
     try {
         await loadPartials();
+        markStartup('partials-loaded');
 
-        // Refresh shared DOM references after all partials have loaded.
+        // DOM references must be captured only after all HTML partials are present.
         await import('./ui/dom.js');
 
-        // Install all extracted implementations before the security and lifecycle decorators.
-        // This ordering ensures decorators wrap the active UI methods.
-        await import('./ui/board-view.js');
-        await import('./ui/board-cards.js');
-        await import('./ui/app-state.js');
-        await import('./ui/modals.js');
-        await import('./ui/members.js');
-        await import('./ui/content-renderers.js');
-        await import('./ui/inline-edit.js');
-        await import('./ui/card-detail.js');
+        // These modules install independent UI methods, so they can be evaluated
+        // together. All must finish before the decorators are applied.
+        await Promise.all([
+            import('./ui/board-view.js'),
+            import('./ui/board-cards.js'),
+            import('./ui/app-state.js'),
+            import('./ui/modals.js'),
+            import('./ui/members.js'),
+            import('./ui/content-renderers.js'),
+            import('./ui/inline-edit.js'),
+            import('./ui/card-detail.js'),
+        ]);
+        markStartup('ui-modules-loaded');
 
+        // Keep decorator order: each layer wraps the implementations installed above.
         await import('./ui-security.js');
         await import('./ui-edit-preservation.js');
         await import('./ui-editor-lifecycle.js');
-        await import('./app.js?v=20261101-app-modules');
+        markStartup('decorators-loaded');
+
+        await import('./app.js?v=20261114-startup-optimization');
     } catch (error) {
         console.error('Kanban failed to initialize:', error);
         const message = document.createElement('div');
@@ -66,4 +83,5 @@ async function bootstrap() {
         document.body.replaceChildren(message);
     }
 }
+
 bootstrap();
