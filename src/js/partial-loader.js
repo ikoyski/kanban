@@ -1,9 +1,9 @@
 /**
  * Loads static HTML partials before the application module is imported.
  *
- * Partials may contain nested data-include placeholders. This loader resolves
- * those in subsequent passes, so profile-menu.html can be nested in
- * app-header.html without adding a frontend framework or build step.
+ * Partials may contain nested data-include placeholders. Each nesting level is
+ * fetched concurrently, then inserted together so nested placeholders are
+ * discovered on the next pass.
  */
 export async function loadPartials(root = document) {
     const maxPasses = 10;
@@ -15,7 +15,7 @@ export async function loadPartials(root = document) {
             return;
         }
 
-        for (const placeholder of placeholders) {
+        const loadedPartials = await Promise.all(placeholders.map(async (placeholder) => {
             const path = placeholder.getAttribute('data-include');
 
             if (!path) {
@@ -36,8 +36,13 @@ export async function loadPartials(root = document) {
                 throw new Error(`HTML partial "${path}" did not contain an element.`);
             }
 
-            placeholder.replaceWith(template.content);
-        }
+            return { placeholder, content: template.content };
+        }));
+
+        // Insert only after every fetch in this level has succeeded.
+        loadedPartials.forEach(({ placeholder, content }) => {
+            placeholder.replaceWith(content);
+        });
     }
 
     if (root.querySelector('[data-include]')) {

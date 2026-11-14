@@ -6,6 +6,41 @@ import { BoardInteractions } from './app/board-interactions.js';
 import { CardActions } from './app/card-actions.js';
 import { DataTransfer } from './app/data-transfer.js';
 
+function markStartup(stage) {
+    if (!window.performance?.mark) return;
+    const name = `kanban:${stage}`;
+    if (performance.getEntriesByName(name, 'mark').length === 0) {
+        performance.mark(name);
+    }
+}
+
+function reportStartupTiming() {
+    const pageStart = performance.getEntriesByName('kanban:page-start', 'mark')[0]?.startTime;
+    if (typeof pageStart !== 'number') return;
+
+    const stages = [
+        'bootstrap-start',
+        'partials-loaded',
+        'ui-modules-loaded',
+        'decorators-loaded',
+        'app-start',
+        'auth-callback-checked',
+        'profile-and-boards-loaded',
+        'board-data-loaded',
+        'workspace-view-ready',
+    ];
+    const timings = {};
+
+    stages.forEach(stage => {
+        const entry = performance.getEntriesByName(`kanban:${stage}`, 'mark')[0];
+        if (entry) {
+            timings[stage] = Math.round((entry.startTime - pageStart) * 10) / 10;
+        }
+    });
+
+    console.info('[Kanban] Startup milestones (ms from initial page load):', timings);
+}
+
 class KanbanApp {
     constructor() {
         this.settings = {};
@@ -17,6 +52,8 @@ class KanbanApp {
     }
 
     async start() {
+        markStartup('app-start');
+
         // Load theme from localStorage if available
         const savedTheme = localStorage.getItem('kanban-theme');
         if (savedTheme) {
@@ -26,6 +63,15 @@ class KanbanApp {
 
         this.setupAuthListeners();
 
+        const callbackParams = new URLSearchParams(window.location.search);
+        this.setLoadingMessage(
+            callbackParams.has('code')
+                ? 'Completing your sign-in…'
+                : callbackParams.has('error')
+                    ? 'Checking the sign-in response…'
+                    : 'Preparing your workspace…'
+        );
+
         // Coming back from the auth server (?code=...): finish the sign-in first.
         let signInError = null;
         try {
@@ -34,6 +80,7 @@ class KanbanApp {
             console.error('Sign-in failed:', error);
             signInError = error.message;
         }
+        markStartup('auth-callback-checked');
 
         // A landing-page sign-in link can skip the app's intermediate auth screen.
         // Consume the one-shot flag before starting OAuth so it is not restored after the callback.
@@ -47,6 +94,7 @@ class KanbanApp {
 
         if (!this.checkAuth() && directSignIn && !signInError) {
             try {
+                this.setLoadingMessage('Redirecting to sign-in…');
                 await Auth.startLogin();
                 return;
             } catch (error) {
@@ -57,15 +105,25 @@ class KanbanApp {
 
         if (this.checkAuth()) {
             try {
-                await this.loadProfile();
-                this.boards = await ApiClient.getBoards();
+                this.setLoadingMessage('Loading your workspace…');
+
+                // These requests are independent; wait for both before selecting the board.
+                const [profile, boards] = await Promise.all([
+                    ApiClient.getMe(),
+                    ApiClient.getBoards(),
+                ]);
+
+                this.loadProfile(profile);
+                this.boards = boards;
+                markStartup('profile-and-boards-loaded');
+
                 await this.resolveActiveBoard();
             } catch (error) {
-                console.error('Failed to load boards:', error);
+                console.error('Failed to load workspace:', error);
                 if (!this.checkAuth()) {
                     this.handleSessionExpired();
                 } else {
-                    alert('Failed to load your boards from the server. Please refresh the page.');
+                    this.showStartupError('We could not load your workspace. Check your connection and try again.');
                 }
             }
         } else {
@@ -73,6 +131,7 @@ class KanbanApp {
             const expired = sessionStorage.getItem('kanban-session-expired');
             sessionStorage.removeItem('kanban-session-expired');
             this.showAuthMessage(signInError || (expired ? 'Your session has expired. Please sign in again.' : null));
+            this.reportStartupReady();
         }
     }
 
@@ -81,13 +140,46 @@ class KanbanApp {
     }
 
     // The profile (name, avatar) comes from the API, not from the token.
-    async loadProfile() {
-        const me = await ApiClient.getMe();
+    loadProfile(me) {
         localStorage.setItem('kanban-user', JSON.stringify({
             email: me.email,
             displayName: me.displayName || me.email,
             avatarUrl: me.avatarUrl,
         }));
+    }
+
+    setLoadingMessage(message) {
+        const element = document.getElementById('app-loading-message');
+        if (element) element.textContent = message;
+    }
+
+    showStartupError(message) {
+        const loadingView = document.getElementById('app-loading-view');
+        if (!loadingView || loadingView.classList.contains('hidden')) {
+            alert(message);
+            return;
+        }
+
+        const title = document.getElementById('app-loading-title');
+        if (title) title.textContent = 'Unable to load your workspace';
+        this.setLoadingMessage(message);
+
+        document.getElementById('app-loading-spinner')?.classList.add('hidden');
+
+        const retry = document.getElementById('app-loading-retry');
+        if (retry) {
+            retry.classList.remove('hidden');
+            retry.onclick = () => window.location.reload();
+        }
+    }
+
+    reportStartupReady() {
+        if (performance.getEntriesByName('kanban:workspace-view-ready', 'mark').length > 0) {
+            return;
+        }
+
+        markStartup('workspace-view-ready');
+        reportStartupTiming();
     }
 
     showAuthMessage(message) {
@@ -98,6 +190,8 @@ class KanbanApp {
     }
 
     switchView(view) {
+        document.getElementById('app-loading-view')?.classList.add('hidden');
+
         if (view === 'board') {
             UI.appAuthView.classList.add('hidden');
             UI.appBoardView.classList.remove('hidden');
@@ -139,8 +233,10 @@ class KanbanApp {
 
             localStorage.setItem('kanban-active-board', boardId);
             this.updateUrl(boardId);
+            markStartup('board-data-loaded');
             this.switchView('board');
             this.init();
+            this.reportStartupReady();
         } catch (error) {
             console.error(`Failed to load board ${boardId}:`, error);
             if (error.message.includes('401')) {
@@ -149,7 +245,7 @@ class KanbanApp {
                 alert('You don\'t have permission to access this board.');
                 this.resolveActiveBoard(); // Try to find another valid board
             } else {
-                alert('Failed to load board from server. Please refresh the page.');
+                this.showStartupError('We could not load this board. Check your connection and try again.');
             }
         }
     }
@@ -176,6 +272,7 @@ class KanbanApp {
         UI.renderBoardSwitcher(this.boards, null);
 
         this.setupEventListeners();
+        this.reportStartupReady();
     }
 
     init() {
