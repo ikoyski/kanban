@@ -1,6 +1,7 @@
 import { getAccessToken } from './auth.js';
+import { config } from './config.js';
 
-const BASE_URL = 'https://api.ikoyski.top/kanban-backend';
+const BASE_URL = config.apiBaseUrl;
 
 class ApiClient {
   static async request(endpoint, options = {}) {
