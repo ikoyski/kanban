@@ -55,6 +55,7 @@ Free online Kanban board for planning work, tracking tasks and keeping your team
         │   ├── board-interactions.js # Board rendering, sorting and filtering
         │   ├── card-actions.js # Card CRUD, detail editing, comments and archive flows
         │   └── data-transfer.js # Board JSON import/export
+        ├── config.js        # Environment-specific API, auth and OAuth callback configuration
         ├── api.js            # REST API client for data persistence (ApiClient class)
         ├── auth.js           # OAuth 2.0 code flow with PKCE and token handling
         ├── ui.js             # Stable UI facade and shared editor state
@@ -73,6 +74,16 @@ Free online Kanban board for planning work, tracking tasks and keeping your team
         ├── ui-editor-lifecycle.js # Quill lifecycle cleanup for card details
         └── editor.js         # Quill wrapper and rich-text sanitizing/rendering helpers
 ```
+
+## Frontend Environments
+
+`src/js/config.js` is the single source of truth for frontend environment endpoints and the OAuth callback URL. It selects configuration by the exact frontend hostname:
+
+- GitHub Pages (`pages.ikoyski.top`) uses the homelab API Gateway and auth server, with callback `/kanban/kanban.html`.
+- Render (`webtools-test-kanban.onrender.com`) uses the Render test API Gateway and auth server, with callback `/kanban.html`.
+- Local development (`localhost` and `127.0.0.1`) retains the existing production API/auth endpoints and resolves the callback against the local origin.
+
+`api.js` and `auth.js` consume this configuration; they must not independently detect the hostname or construct the OAuth redirect URI. Unknown hostnames fail explicitly rather than silently selecting an environment.
 
 ## Tech Stack
 
