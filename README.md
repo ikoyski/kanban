@@ -17,7 +17,7 @@ Free online Kanban board for planning work, tracking tasks and keeping your team
 - **Optimistic UI**: Instant visual feedback for actions like moving cards, with background synchronization to the API.
 - **Data Portability**: Export your entire board state to a JSON file and import it back to restore your data or move it between browsers.
 - **Search Function**: Quickly filter cards across all columns by keyword (title, description, or labels).
-- **AI Assistant Integration (MCP)**: Connect compatible assistants such as Google Gemini, Anthropic Claude and xAI Grok. Other compatible clients, including OpenAI ChatGPT, may be available depending on their MCP support and configuration. Authorized assistants can use supported Kanban tools to list boards, inspect and manage columns/cards, move tasks, and work with comments using the user's existing permissions.
+- **AI Assistant Integration (MCP)**: Connect tested assistants Google Gemini, Anthropic Claude and xAI Grok. OpenAI ChatGPT and Cursor are not yet verified; they may work depending on their MCP support and configuration. Authorized assistants can use supported Kanban tools to list boards, inspect and manage columns/cards, move tasks, and work with comments using the user's existing permissions.
 
 ## Project Structure
 
@@ -143,7 +143,7 @@ The frontend is not the MCP server. MCP support is provided by the separate Kanb
 
 ## AI Assistant Integrations
 
-Users can connect supported AI clients, including Google Gemini, Anthropic Claude and xAI Grok, to the separate MCP endpoint. Other compatible clients, including OpenAI ChatGPT, may be available depending on their MCP support and configuration. After authorization, an assistant can invoke the MCP tools exposed by the service. These may include listing boards, reading board details, creating or updating cards, moving cards, managing columns, archiving/restoring cards and working with comments.
+Google Gemini, Anthropic Claude and xAI Grok have been manually tested against the MCP integration. OpenAI ChatGPT and Cursor have not yet been verified; compatibility depends on each client's MCP support and configuration. Users connect through the separate MCP endpoint and authorize access before the assistant can invoke available tools. After authorization, an assistant can invoke the MCP tools exposed by the service. These may include listing boards, reading board details, creating or updating cards, moving cards, managing columns, archiving/restoring cards and working with comments.
 
 AI operations are performed with the user's authorization and are subject to the user's existing Kanban permissions. Prompts and Kanban information shared with an assistant may be processed by that AI provider under its own terms and privacy policy. See [Privacy Policy](privacy.html) and [Terms of Use](terms.html) for the user-facing disclosures.
 
