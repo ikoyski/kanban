@@ -1,3 +1,5 @@
+import { config } from './config.js';
+
 // Sign-in with the auth server: OAuth 2.0 authorization code flow with PKCE (RFC 7636).
 // People choose a configured identity provider on the auth server; this page never sees a provider password.
 //
@@ -5,7 +7,7 @@
 // clients. So there is only an access token. When it expires the user signs in again, which is one
 // click (and instant while the auth server's own session is still valid).
 
-const AUTH_BASE_URL = 'https://auth.ikoyski.top';
+const AUTH_BASE_URL = config.authBaseUrl;
 const CLIENT_ID = 'kanban-web';
 const SCOPE = 'kanban.read kanban.write';
 
@@ -16,7 +18,7 @@ const EXPIRY_MARGIN_MS = 30_000;
 // The page the auth server sends the browser back to. It must be registered for the client
 // (AUTH_WEB_REDIRECT_URIS) character for character.
 export function redirectUri() {
-    return new URL('kanban.html', window.location.href).href;
+    return config.redirectUri;
 }
 
 // ---- PKCE helpers -------------------------------------------------------------------------
