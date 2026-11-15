@@ -1,7 +1,6 @@
 # Kanban
 
-A modern, responsive Kanban board implementation featuring drag-and-drop functionality, dark mode support, and REST API persistence.
-
+Free online Kanban board for planning work, tracking tasks and keeping your team aligned. Organize cards, share boards and see what needs attention next. Connect compatible AI assistants and ask it to retrieve boards, create or update cards, move tasks and add comments.
 ## Features
 
 - **Authentication**: Sign in with Google or GitHub. Sign-in happens on a separate auth server (OAuth 2.0 authorization code flow with PKCE); the app never sees a provider password. New people are created the first time they sign in.
