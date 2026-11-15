@@ -25,8 +25,9 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - `src/js/app/board-interactions.js`: Board rendering, SortableJS setup, column/card reordering and card filtering.
 - `src/js/app/card-actions.js`: Card creation, detail-modal editing, comments, deletion and archive/restore workflows.
 - `src/js/app/data-transfer.js`: Board JSON import/export workflows.
-- `src/js/api.js`: Data persistence layer (`ApiClient` class). Handles communication with the REST API backend; every request carries the access token from `auth.js`.
-- `src/js/auth.js`: Sign-in with the auth server: OAuth 2.0 authorization code flow with PKCE, token storage, sign-out. No UI code in it.
+- `src/js/config.js`: Single source of truth for environment-specific API/auth endpoints and the OAuth callback URL. It selects an explicit configuration by frontend hostname; unknown hosts must fail rather than silently fall back.
+- `src/js/api.js`: Data persistence layer (`ApiClient` class). Reads its API base URL from `config.js`; every request carries the access token from `auth.js`.
+- `src/js/auth.js`: Sign-in with the auth server: OAuth 2.0 authorization code flow with PKCE, token storage, sign-out. Reads the auth base URL and redirect URI from `config.js`; do not construct the callback URL here.
 - `src/js/ui/board-view.js`: Board-level rendering, board controls and empty-board state.
 - `src/js/ui/board-cards.js`: Column and card markup/rendering; receives already-escaped plain-text values through the `ui-security.js` decorator.
 - `src/js/ui/app-state.js`: Theme switching and card-count UI updates.
@@ -39,6 +40,12 @@ The project is a vanilla JavaScript implementation of a Kanban board using ES6 m
 - `src/js/ui-edit-preservation.js`: Wraps inline editors so failed saves retain their contents and allow retry/cancel.
 - `src/js/ui-editor-lifecycle.js`: Destroys the active comment editor before detail modal replacement or close.
 - `src/js/editor.js`: WYSIWYG rich-text support. Wraps Quill (`createRichEditor`) and provides the sanitize/normalize/plain-text helpers (`sanitizeHtml`, `toDisplayHtml`, `toPlainText`, `normalizeEditorHtml`) used anywhere card `description` or comment `content` is read, written, or displayed.
+
+### Frontend Environment Configuration
+- Keep all frontend environment-specific API, auth and OAuth callback values in `src/js/config.js`.
+- GitHub Pages uses `https://api.ikoyski.top/kanban-backend` and `https://auth.ikoyski.top`; the Render test frontend uses the corresponding `webtools-test-*` services.
+- The Pages callback path is `/kanban/kanban.html`; the Render callback path is `/kanban.html`. Local development resolves `/kanban.html` against its local origin.
+- `redirectUri()` in `auth.js` must return `config.redirectUri` directly. Do not derive callback URLs elsewhere or add hostname checks to `api.js` or `auth.js`.
 
 ### State Management
 - State is maintained as a central object within the `KanbanApp` instance.
