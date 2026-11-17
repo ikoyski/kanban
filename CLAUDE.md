@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+
+
+**Scope note:** The AI/MCP features described here connect assistants to the Kanban application through the separate Webtools Kanban MCP service. They do not configure or verify the separate Homelab Management MCP service, which has its own OAuth resource, `homelab.read` scope, identity allowlist and deployment. A successful Kanban connector test must not be treated as proof of Homelab MCP compatibility.
+
 ## Development Commands
 - **Run App**: Serve the repository over HTTP (for example, `python -m http.server 8000`) and open `http://localhost:8000/kanban.html`. The app loads HTML partials with `fetch()`, so do not open `kanban.html` using `file://`. The static landing/legal pages can still be opened directly, but using the local server is recommended.
 - **Build/Test**: No build step is required. Playwright E2E tests run with `npm run test:e2e` (Node.js 22+); install browser dependencies with `npx playwright install chromium` first. The HTML partial loader has no framework or build-time dependency.
