@@ -19,6 +19,10 @@ Free online Kanban board for planning work, tracking tasks and keeping your team
 - **Search Function**: Quickly filter cards across all columns by keyword (title, description, or labels).
 - **AI Assistant Integration (MCP)**: Connect tested assistants Google Gemini, Anthropic Claude and xAI Grok. OpenAI ChatGPT and Cursor are not yet verified; they may work depending on their MCP support and configuration. Authorized assistants can use supported Kanban tools to list boards, inspect and manage columns/cards, move tasks, and work with comments using the user's existing permissions.
 
+
+
+**Scope note:** The AI/MCP features described here connect assistants to the Kanban application through the separate Webtools Kanban MCP service. They do not configure or verify the separate Homelab Management MCP service, which has its own OAuth resource, `homelab.read` scope, identity allowlist and deployment. A successful Kanban connector test must not be treated as proof of Homelab MCP compatibility.
+
 ## Project Structure
 
 ```text
